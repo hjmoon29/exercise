@@ -90,11 +90,19 @@
     align-items: baseline;
     justify-content: center;
     flex-wrap: nowrap;
+    white-space: nowrap;
     gap: 0;
     transform-origin: center center;
     will-change: transform;
   }
+  /* 모든 flex 자식은 축소·줄바꿈 금지 */
+  .clock-time > *,
+  .sw-time > * {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
   .clock-time { gap: 0.12em; }
+  .clock-time .digits { white-space: nowrap; }
   .clock-time .ampm {
     font-family: 'Bebas Neue', 'Impact', sans-serif;
     font-size: 0.32em;
@@ -107,11 +115,22 @@
     display: inline-block;
     width: 0.62em;
     text-align: center;
+    white-space: nowrap;
   }
   .clock-time .colon {
     display: inline-block;
     width: 0.35em;
     text-align: center;
+    white-space: nowrap;
+  }
+  .sw-time .h,
+  .sw-time .m,
+  .sw-time .s,
+  .sw-time .ds,
+  .sw-time .hgrp,
+  .sw-time .mgrp {
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   /* 스톱워치 패널 */

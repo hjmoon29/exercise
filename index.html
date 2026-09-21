@@ -75,74 +75,50 @@
     margin-bottom: clamp(6px, 1.6vmin, 14px);
   }
 
-  /* 현재 시각 · 스톱워치 공통 숫자 스타일 (사이즈 일치) */
+  /* 현재 시각 · 스톱워치 공통 숫자 스타일 (완전 동일) */
   .clock-time,
   .sw-time {
     font-family: 'Anton', 'Bebas Neue', 'Impact', sans-serif;
     font-variant-numeric: tabular-nums;
     font-feature-settings: 'tnum' 1, 'lnum' 1;
-    font-size: clamp(120px, 42vw, 400px);
+    font-size: clamp(88px, 21vw, 240px);
     font-weight: 400;
     letter-spacing: 0;
     line-height: 0.9;
     color: var(--fg);
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    flex-wrap: nowrap;
+    display: block;
+    text-align: center;
     white-space: nowrap;
-    gap: 0;
     transform-origin: center center;
     will-change: transform;
   }
-  /* 모든 flex 자식은 축소·줄바꿈 금지 */
-  .clock-time > *,
-  .sw-time > * {
-    flex-shrink: 0;
+  .clock-time .digits,
+  .sw-time .digits {
+    display: inline-block;
     white-space: nowrap;
-  }
-  .clock-time { gap: 0.12em; }
-  .clock-time .digits { white-space: nowrap; }
-  .clock-time .ampm {
-    font-family: 'Bebas Neue', 'Impact', sans-serif;
-    font-size: 0.32em;
-    font-weight: 400;
-    letter-spacing: 4px;
-    color: var(--muted);
   }
   /* 각 자릿수 고정 너비 (숫자마다 폭 달라도 흔들리지 않음) */
   .digit {
     display: inline-block;
     width: 0.62em;
     text-align: center;
-    white-space: nowrap;
   }
-  .clock-time .colon {
+  .colon {
     display: inline-block;
-    width: 0.35em;
+    width: 0.28em;
     text-align: center;
-    white-space: nowrap;
-  }
-  .sw-time .h,
-  .sw-time .m,
-  .sw-time .s,
-  .sw-time .ds,
-  .sw-time .hgrp,
-  .sw-time .mgrp {
-    white-space: nowrap;
-    flex-shrink: 0;
   }
 
   /* 스톱워치 패널 */
   .sw-panel {
-    padding: clamp(12px, 2.4vmin, 20px) clamp(10px, 2vw, 16px);
+    padding: clamp(8px, 1.6vmin, 16px) 0;
     background: transparent;
     border: none;
     border-radius: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: clamp(16px, 3.6vmin, 32px);
+    gap: clamp(14px, 3vmin, 28px);
   }
   .sw-time .unit {
     font-family: 'Black Han Sans', 'Anton', sans-serif;
@@ -219,35 +195,25 @@
   /* ============ 가로 모드 (Landscape) ============ */
   @media (orientation: landscape) {
     body {
-      /* Grid 고정 컬럼으로 좌우 폭 흔들림 방지 */
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr;
-      justify-items: center;
-      align-items: center;
-      flex-direction: initial;
-      justify-content: initial;
-      gap: clamp(12px, 2.4vw, 32px);
-      overflow: hidden;
+      /* 세로 스택 유지하되 gap 축소, vh 기반 폰트로 화면 폭 활용 */
+      gap: clamp(10px, 2vh, 24px);
     }
-    .section { width: 100%; min-width: 0; }
-    /* 가로일 땐 vh 기반, 시계·스톱워치 크기 동일 */
     .clock-time,
     .sw-time {
-      font-size: clamp(120px, 55vh, 400px);
+      font-size: clamp(88px, 26vh, 260px);
       line-height: 0.9;
     }
     .sw-panel {
-      padding: clamp(6px, 1.5vh, 14px) 0;
-      gap: clamp(14px, 3vh, 28px);
+      padding: clamp(4px, 1vh, 12px) 0;
+      gap: clamp(10px, 2.4vh, 22px);
     }
     .btn {
-      padding: clamp(12px, 2.4vh, 20px) clamp(18px, 4vw, 32px);
-      font-size: clamp(14px, 2.6vh, 20px);
+      padding: clamp(10px, 2vh, 16px) clamp(18px, 4vw, 32px);
+      font-size: clamp(13px, 2.2vh, 18px);
     }
     .label {
-      font-size: clamp(11px, 2vh, 15px);
-      margin-bottom: clamp(4px, 1vh, 10px);
+      font-size: clamp(10px, 1.8vh, 14px);
+      margin-bottom: clamp(3px, 0.8vh, 8px);
     }
   }
 </style>
@@ -256,8 +222,7 @@
   <div class="section section-clock">
     <div class="label">Now</div>
     <div class="clock-time" id="clockTime">
-      <span class="ampm">AM</span>
-      <span class="digits">12:00:00</span>
+      <span class="digits">00:00:00</span>
     </div>
   </div>
 
@@ -265,7 +230,7 @@
     <div class="label"><span class="live-dot" id="liveDot"></span>Stopwatch</div>
     <div class="sw-panel">
       <div class="sw-time" id="swTime">
-        <span class="hgrp"><span class="h">0</span><span class="unit">시</span></span><span class="mgrp"><span class="m">0</span><span class="unit">분</span></span><span class="s">0</span><span class="unit dot">.</span><span class="ds">0</span><span class="unit">초</span>
+        <span class="digits">00:00:00</span>
       </div>
       <div class="controls">
         <button class="btn btn-primary" id="btnToggle">시작</button>
@@ -303,7 +268,7 @@
   function scaleFit(el) {
     el.style.transform = '';
     const parent = el.parentElement;
-    const avail = parent.clientWidth * 0.98;
+    const avail = parent.clientWidth * 0.96;
     const natural = el.scrollWidth;
     if (natural > 0 && natural > avail) {
       const scale = avail / natural;
@@ -311,33 +276,26 @@
     }
   }
 
-  // ============ 현재 시각 ============
+  const pad2 = (n) => String(n).padStart(2, '0');
+
+  // ============ 현재 시각 (24시간, HH:MM:SS) ============
   const clockEl = document.getElementById('clockTime');
-  const ampmEl = clockEl.querySelector('.ampm');
-  const digitsEl = clockEl.querySelector('.digits');
+  const clockDigits = clockEl.querySelector('.digits');
+  let lastClock = '';
   function updateClock() {
     const d = new Date();
-    let h = d.getHours();
-    const m = d.getMinutes();
-    const s = d.getSeconds();
-    const isPm = h >= 12;
-    let hh = h % 12;
-    if (hh === 0) hh = 12;
-    ampmEl.textContent = isPm ? 'PM' : 'AM';
-    digitsEl.innerHTML = digitSpans(`${hh}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`);
+    const str = `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+    if (str === lastClock) return;
+    lastClock = str;
+    clockDigits.innerHTML = digitSpans(str);
     scaleFit(clockEl);
   }
   updateClock();
-  setInterval(updateClock, 1000);
+  setInterval(updateClock, 500);
 
-  // ============ 스톱워치 ============
+  // ============ 스톱워치 (HH:MM:SS) ============
   const swEl = document.getElementById('swTime');
-  const hEl = swEl.querySelector('.h');
-  const mEl = swEl.querySelector('.m');
-  const sEl = swEl.querySelector('.s');
-  const dsEl = swEl.querySelector('.ds');
-  const hGrp = swEl.querySelector('.hgrp');
-  const mGrp = swEl.querySelector('.mgrp');
+  const swDigits = swEl.querySelector('.digits');
   const btnToggle = document.getElementById('btnToggle');
   const btnReset = document.getElementById('btnReset');
   const liveDot = document.getElementById('liveDot');
@@ -346,21 +304,18 @@
   let startedAt = 0;   // 마지막 시작 시점(ms since epoch)
   let elapsed = 0;     // 이전까지 누적된 시간(ms)
   let rafId = null;
+  let lastSw = '';
 
   function renderSw() {
     const now = running ? (Date.now() - startedAt + elapsed) : elapsed;
-    const totalMs = Math.max(0, now);
-    const h = Math.floor(totalMs / 3600000);
-    const m = Math.floor(totalMs / 60000) % 60;
-    const s = Math.floor(totalMs / 1000) % 60;
-    const ds = Math.floor((totalMs % 1000) / 100);
-    // 앞자리 0 그룹은 숨김 (n시 n분 n.n초)
-    hGrp.classList.toggle('show', h > 0);
-    mGrp.classList.toggle('show', h > 0 || m > 0);
-    hEl.innerHTML = digitSpans(String(h));
-    mEl.innerHTML = digitSpans((h > 0) ? String(m).padStart(2, '0') : String(m));
-    sEl.innerHTML = digitSpans((h > 0 || m > 0) ? String(s).padStart(2, '0') : String(s));
-    dsEl.innerHTML = digitSpans(String(ds));
+    const totalSec = Math.max(0, Math.floor(now / 1000));
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor(totalSec / 60) % 60;
+    const s = totalSec % 60;
+    const str = `${pad2(h)}:${pad2(m)}:${pad2(s)}`;
+    if (str === lastSw) return;
+    lastSw = str;
+    swDigits.innerHTML = digitSpans(str);
     scaleFit(swEl);
   }
 
@@ -399,6 +354,7 @@
     if (running) return;
     elapsed = 0;
     startedAt = 0;
+    lastSw = '';
     renderSw();
   }
 

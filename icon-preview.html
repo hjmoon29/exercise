@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exercise · 아이콘 후보 4안 (V4 · Reference)</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+    background: #f4f4f4;
+    color: #111;
+    padding: 32px 20px;
+    min-height: 100vh;
+  }
+  h1 {
+    font-family: 'Anton', sans-serif;
+    font-size: 36px;
+    letter-spacing: 1px;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .sub {
+    text-align: center;
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 28px;
+  }
+  .ref-row {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .ref-row img {
+    width: 120px;
+    height: 120px;
+    background: #fff;
+    border-radius: 20px;
+    padding: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+  .ref-row div {
+    color: #666;
+    font-size: 12px;
+    margin-top: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .grid {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    text-align: center;
+  }
+  .card h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+  .card .desc {
+    color: #666;
+    font-size: 12px;
+    margin-bottom: 20px;
+    min-height: 34px;
+    line-height: 1.4;
+  }
+  .icon-row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: center;
+  }
+  .icon-lg { width: 152px; height: 152px; border-radius: 32px; }
+  .icon-sm { width: 56px; height: 56px; border-radius: 12px; }
+</style>
+</head>
+<body>
+  <h1>EXERCISE · GYM ARM (V4)</h1>
+  <p class="sub">참고 이미지 기반 · 어깨 캡 + 이두근 mass + 눈 모양 negative space + 주먹 돌출</p>
+
+  <div class="ref-row">
+    <img src="/Downloads/exercise.png" alt="reference" onerror="this.style.display='none'; this.nextElementSibling.textContent='(참고: Downloads/exercise.png)';">
+    <div>Reference</div>
+  </div>
+
+  <div class="grid">
+
+    <!-- ============ V1: 화이트 배경 · 검은 팔 (Reference 재현) ============ -->
+    <div class="card">
+      <h3>1. REFERENCE (WHITE BG)</h3>
+      <div class="desc">참고 이미지 그대로 재해석 · 화이트 배경 위 검은 실루엣.</div>
+      <div class="icon-row">
+        <svg class="icon-lg" viewBox="0 0 512 512">
+          <rect width="512" height="512" rx="112" fill="#fff" stroke="#e5e5e5" stroke-width="2"/>
+          <path fill="#000" fill-rule="evenodd" d="
+            M 92 55
+            C 130 30 240 20 300 50
+            C 345 72 358 115 335 145
+            C 312 172 280 178 250 180
+            C 225 185 205 215 195 250
+            C 220 240 260 235 295 265
+            C 335 240 400 240 445 265
+            C 460 258 475 258 485 268
+            C 498 282 495 305 480 315
+            L 440 335
+            C 445 360 445 385 440 415
+            C 430 445 400 465 360 475
+            C 300 490 220 490 155 475
+            C 100 460 60 435 40 395
+            C 20 350 25 285 40 220
+            C 55 155 75 100 92 55 Z
+
+            M 232 250
+            C 258 220 296 218 308 244
+            C 316 268 295 285 268 285
+            C 240 285 218 273 232 250 Z
+          "/>
+        </svg>
+        <svg class="icon-sm" viewBox="0 0 512 512">
+          <rect width="512" height="512" rx="112" fill="#fff" stroke="#e5e5e5" stroke-width="2"/>
+          <path fill="#000" fill-rule="evenodd" d="M 92 55 C 130 30 240 20 300 50 C 345 72 358 115 335 145 C 312 172 280 178 250 180 C 225 185 205 215 195 250 C 220 240 260 235 295 265 C 335 240 400 240 445 265 C 460 258 475 258 485 268 C 498 282 495 305 480 315 L 440 335 C 445 360 445 385 440 415 C 430 445 400 465 360 475 C 300 490 220 490 155 475 C 100 460 60 435 40 395 C 20 350 25 285 40 220 C 55 155 75 100 92 55 Z M 232 250 C 258 220 296 218 308 244 C 316 268 295 285 268 285 C 240 285 218 273 232 250 Z"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- ============ V2: 블랙 배경 · 흰 팔 (반전) ============ -->
+    <div class="card">
+      <h3>2. INVERTED (BLACK BG)</h3>
+      <div class="desc">블랙 배경 위 흰 팔 · 앱 아이콘으로 더 잘 어울림.</div>
+      <div class="icon-row">
+        <svg class="icon-lg" viewBox="0 0 512 512">
+          <rect width="512" height="512" rx="112" fill="#000"/>
+          <path fill="#fff" fill-rule="evenodd" d="
+            M 92 55
+            C 130 30 240 20 300 50
+            C 345 72 358 115 335 145
+            C 312 172 280 178 250 180
+            C 225 185 205 215 195 250
+            C 220 240 260 235 295 265
+            C 335 240 400 240 445 265
+            C 460 258 475 258 485 268
+            C 498 282 495 305 480 315
+            L 440 335
+            C 445 360 445 385 440 415
+            C 430 445 400 465 360 475
+            C 300 490 220 490 155 475
+            C 100 460 60 435 40 395
+            C 20 350 25 285 40 220
+            C 55 155 75 100 92 55 Z
+
+            M 232 250
+            C 258 220 296 218 308 244
+            C 316 268 295 285 268 285
+            C 240 285 218 273 232 250 Z
+          "/>
+        </svg>
+        <svg class="icon-sm" viewBox="0 0 512 512">
+          <rect width="512" height="512" rx="112" fill="#000"/>
+          <path fill="#fff" fill-rule="evenodd" d="M 92 55 C 130 30 240 20 300 50 C 345 72 358 115 335 145 C 312 172 280 178 250 180 C 225 185 205 215 195 250 C 220 240 260 235 295 265 C 335 240 400 240 445 265 C 460 258 475 258 485 268 C 498 282 495 305 480 315 L 440 335 C 445 360 445 385 440 415 C 430 445 400 465 360 475 C 300 490 220 490 155 475 C 100 460 60 435 40 395 C 20 350 25 285 40 220 C 55 155 75 100 92 55 Z M 232 250 C 258 220 296 218 308 244 C 316 268 295 285 268 285 C 240 285 218 273 232 250 Z"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- ============ V3: 파이어 라인 (근육 정의) ============ -->
+    <div class="card">
+      <h3>3. WITH INNER LINES</h3>
+      <div class="desc">근육 정의선 추가 · 이두근·팔뚝 갈래 라인.</div>
+      <div class="icon-row">
+        <svg class="icon-lg" viewBox="0 0 512 512">
+          <rect width="512" height="512" rx="112" fill="#000"/>
+          <path fill="#fff" fill-rule="evenodd" d="
+            M 92 55
+            C 130 30 240 20 300 50
+            C 345 72 358 115 335 145
+            C 312 172 280 178 250 180
+            C 225 185 205 215 195 250
+            C 220 240 260 235 295 265
+            C 335 240 400 240 445 265
+            C 460 258 475 258 485 268
+            C 498 282 495 305 480 315
+            L 440 335
+            C 445 360 445 385 440 415
+            C 430 445 400 465 360 475
+            C 300 490 220 490 155 475
+            C 100 460 60 435 40 395
+            C 20 350 25 285 40 220
+            C 55 155 75 100 92 55 Z
+
+            M 232 250
+            C 258 220 296 218 308 244
+            C 316 268 295 285 268 285
+            C 240 285 218 273 232 250 Z
+          "/>
+          <g stroke="#000" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.5">
+            <!-- 이두근 갈래 -->
+            <path d="M 130 200 C 150 260 190 320 230 350"/>
+            <path d="M 90 260 C 105 330 140 400 190 420"/>
+            <!-- 팔뚝 근육 -->
+            <path d="M 340 300 C 370 340 385 400 380 440"/>
+            <path d="M 400 305 C 420 340 425 385 420 415"/>
+          </g>
+        </svg>
+        <svg class="icon-sm" viewBox="0 0 512 512">
+          <rect width="512" height="512" rx="112" fill="#000"/>
+          <path fill="#fff" fill-rule="evenodd" d="M 92 55 C 130 30 240 20 300 50 C 345 72 358 115 335 145 C 312 172 280 178 250 180 C 225 185 205 215 195 250 C 220 240 260 235 295 265 C 335 240 400 240 445 265 C 460 258 475 258 485 268 C 498 282 495 305 480 315 L 440 335 C 445 360 445 385 440 415 C 430 445 400 465 360 475 C 300 490 220 490 155 475 C 100 460 60 435 40 395 C 20 350 25 285 40 220 C 55 155 75 100 92 55 Z M 232 250 C 258 220 296 218 308 244 C 316 268 295 285 268 285 C 240 285 218 273 232 250 Z"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- ============ V4: 아웃라인 스타일 ============ -->
+    <div class="card">
+      <h3>4. OUTLINE ONLY</h3>
+      <div class="desc">굵은 라인 스트로크 · 미니멀 로고 톤.</div>
+      <div class="icon-row">
+        <svg class="icon-lg" viewBox="0 0 512 512">
+          <rect width="512" height="512" rx="112" fill="#fff"/>
+          <path fill="none" stroke="#000" stroke-width="14" stroke-linejoin="round" fill-rule="evenodd" d="
+            M 92 55
+            C 130 30 240 20 300 50
+            C 345 72 358 115 335 145
+            C 312 172 280 178 250 180
+            C 225 185 205 215 195 250
+            C 220 240 260 235 295 265
+            C 335 240 400 240 445 265
+            C 460 258 475 258 485 268
+            C 498 282 495 305 480 315
+            L 440 335
+            C 445 360 445 385 440 415
+            C 430 445 400 465 360 475
+            C 300 490 220 490 155 475
+            C 100 460 60 435 40 395
+            C 20 350 25 285 40 220
+            C 55 155 75 100 92 55 Z
+
+            M 232 250
+            C 258 220 296 218 308 244
+            C 316 268 295 285 268 285
+            C 240 285 218 273 232 250 Z
+          "/>
+        </svg>
+        <svg class="icon-sm" viewBox="0 0 512 512">
+          <rect width="512" height="512" rx="112" fill="#fff"/>
+          <path fill="none" stroke="#000" stroke-width="20" stroke-linejoin="round" fill-rule="evenodd" d="M 92 55 C 130 30 240 20 300 50 C 345 72 358 115 335 145 C 312 172 280 178 250 180 C 225 185 205 215 195 250 C 220 240 260 235 295 265 C 335 240 400 240 445 265 C 460 258 475 258 485 268 C 498 282 495 305 480 315 L 440 335 C 445 360 445 385 440 415 C 430 445 400 465 360 475 C 300 490 220 490 155 475 C 100 460 60 435 40 395 C 20 350 25 285 40 220 C 55 155 75 100 92 55 Z M 232 250 C 258 220 296 218 308 244 C 316 268 295 285 268 285 C 240 285 218 273 232 250 Z"/>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="sub" style="margin-top:30px;">
+    참고 이미지와 비슷하게 나왔는지 확인 후 조정 요청 알려주세요 (곡선 조정, 눈 크기, 주먹 위치 등).
+  </p>
+</body>
+</html>

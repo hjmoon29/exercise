@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Exercise">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Exercise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Black+Ops+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000000;
+    --fg: #ffffff;
+    --muted: #6b6b6b;
+    --line: rgba(255, 255, 255, 0.14);
+    --panel: rgba(255, 255, 255, 0.04);
+    --btn-bg: #ffffff;
+    --btn-fg: #000000;
+    --btn-bg-alt: transparent;
+    --btn-fg-alt: #ffffff;
+    --danger: #ff3b30;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--fg);
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    -webkit-user-select: none;
+    user-select: none;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Malgun Gothic", sans-serif;
+  }
+  html { height: 100%; }
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
+    height: 100dvh;
+    padding: max(16px, env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    gap: clamp(14px, 3.5vmin, 32px);
+    overflow: hidden;
+  }
+
+  .section {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+
+  .label {
+    font-family: 'Bebas Neue', 'Impact', sans-serif;
+    font-size: clamp(12px, 2.4vmin, 16px);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 400;
+    margin-bottom: clamp(6px, 1.6vmin, 14px);
+  }
+
+  /* 현재 시각 · 스톱워치 공통 숫자 스타일 (사이즈 일치) */
+  .clock-time,
+  .sw-time {
+    font-family: 'Anton', 'Bebas Neue', 'Impact', sans-serif;
+    font-variant-numeric: tabular-nums;
+    font-size: clamp(64px, 20vw, 220px);
+    font-weight: 400;
+    letter-spacing: 1px;
+    line-height: 0.9;
+    color: var(--fg);
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 0;
+  }
+  .clock-time { gap: 12px; }
+  .clock-time .ampm {
+    font-family: 'Bebas Neue', 'Impact', sans-serif;
+    font-size: 0.32em;
+    font-weight: 400;
+    letter-spacing: 4px;
+    color: var(--muted);
+  }
+
+  /* 스톱워치 패널 */
+  .sw-panel {
+    padding: clamp(12px, 2.4vmin, 20px) clamp(10px, 2vw, 16px);
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(16px, 3.6vmin, 32px);
+  }
+  .sw-time .unit {
+    font-family: 'Black Han Sans', 'Anton', sans-serif;
+    font-size: 0.34em;
+    color: var(--muted);
+    font-weight: 400;
+    margin: 0 clamp(4px, 1vmin, 12px) 0 clamp(2px, 0.6vmin, 6px);
+    letter-spacing: 0;
+    line-height: 1;
+  }
+  .sw-time .unit.dot {
+    color: var(--fg);
+    margin: 0 2px;
+  }
+  .sw-time .h, .sw-time .m, .sw-time .s, .sw-time .ds { line-height: 0.9; }
+  .sw-time .hgrp, .sw-time .mgrp { display: none; align-items: baseline; }
+  .sw-time .hgrp.show, .sw-time .mgrp.show { display: inline-flex; }
+  .sw-time.running .ds { color: #ffffff; }
+
+  .controls {
+    display: flex;
+    gap: clamp(8px, 2vmin, 16px);
+    justify-content: center;
+  }
+  .btn {
+    flex: 1;
+    max-width: 260px;
+    padding: clamp(14px, 3vmin, 22px) clamp(20px, 4vmin, 32px);
+    font-family: 'Bebas Neue', 'Impact', sans-serif;
+    font-size: clamp(15px, 3vmin, 22px);
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border-radius: 100px;
+    border: 1.5px solid var(--fg);
+    cursor: pointer;
+    transition: transform 0.12s ease, background 0.18s ease, color 0.18s ease;
+  }
+  .btn:active { transform: scale(0.97); }
+
+  .btn-primary { background: var(--btn-bg); color: var(--btn-fg); }
+  .btn-primary.running {
+    background: transparent;
+    color: var(--fg);
+    border-color: var(--fg);
+  }
+  .btn-secondary { background: var(--btn-bg-alt); color: var(--btn-fg-alt); }
+  .btn-secondary:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  /* 은은한 heartbeat 도트 (측정중 표시) */
+  .live-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--fg);
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .live-dot.on {
+    opacity: 1;
+    animation: blink 1s ease-in-out infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.25; }
+  }
+
+  /* ============ 가로 모드 (Landscape) ============ */
+  @media (orientation: landscape) {
+    body {
+      flex-direction: row;
+      justify-content: space-evenly;
+      align-items: center;
+      gap: clamp(12px, 3vw, 40px);
+    }
+    .section { width: auto; }
+    /* 가로일 땐 vh 기반으로 화면 꽉 채움. 시계·스톱워치 크기 동일. */
+    .clock-time,
+    .sw-time {
+      font-size: clamp(72px, 32vh, 240px);
+      line-height: 0.9;
+    }
+    .sw-panel {
+      padding: clamp(8px, 2vh, 16px) 0;
+      gap: clamp(14px, 3vh, 28px);
+    }
+    .btn {
+      padding: clamp(12px, 2.4vh, 20px) clamp(18px, 4vw, 32px);
+      font-size: clamp(14px, 2.6vh, 20px);
+    }
+    .label {
+      font-size: clamp(11px, 2vh, 15px);
+      margin-bottom: clamp(4px, 1vh, 10px);
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="section section-clock">
+    <div class="label">Now</div>
+    <div class="clock-time" id="clockTime">
+      <span class="ampm">AM</span>
+      <span class="digits">12:00:00</span>
+    </div>
+  </div>
+
+  <div class="section section-sw">
+    <div class="label"><span class="live-dot" id="liveDot"></span>Stopwatch</div>
+    <div class="sw-panel">
+      <div class="sw-time" id="swTime">
+        <span class="hgrp"><span class="h">0</span><span class="unit">시</span></span><span class="mgrp"><span class="m">0</span><span class="unit">분</span></span><span class="s">0</span><span class="unit dot">.</span><span class="ds">0</span><span class="unit">초</span>
+      </div>
+      <div class="controls">
+        <button class="btn btn-primary" id="btnToggle">시작</button>
+        <button class="btn btn-secondary" id="btnReset">초기화</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ============ 확대/축소 제스처 차단 ============
+  ['gesturestart', 'gesturechange', 'gestureend'].forEach(evt => {
+    document.addEventListener(evt, (e) => e.preventDefault(), { passive: false });
+  });
+  document.addEventListener('touchmove', (e) => {
+    if (e.touches && e.touches.length > 1) e.preventDefault();
+  }, { passive: false });
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (e) => {
+    const now = Date.now();
+    if (now - lastTouchEnd < 320) e.preventDefault();
+    lastTouchEnd = now;
+  }, { passive: false });
+
+  // ============ 현재 시각 ============
+  const clockEl = document.getElementById('clockTime');
+  const ampmEl = clockEl.querySelector('.ampm');
+  const digitsEl = clockEl.querySelector('.digits');
+  function updateClock() {
+    const d = new Date();
+    let h = d.getHours();
+    const m = d.getMinutes();
+    const s = d.getSeconds();
+    const isPm = h >= 12;
+    let hh = h % 12;
+    if (hh === 0) hh = 12;
+    ampmEl.textContent = isPm ? 'PM' : 'AM';
+    digitsEl.textContent = `${hh}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // ============ 스톱워치 ============
+  const swEl = document.getElementById('swTime');
+  const hEl = swEl.querySelector('.h');
+  const mEl = swEl.querySelector('.m');
+  const sEl = swEl.querySelector('.s');
+  const dsEl = swEl.querySelector('.ds');
+  const hGrp = swEl.querySelector('.hgrp');
+  const mGrp = swEl.querySelector('.mgrp');
+  const btnToggle = document.getElementById('btnToggle');
+  const btnReset = document.getElementById('btnReset');
+  const liveDot = document.getElementById('liveDot');
+
+  let running = false;
+  let startedAt = 0;   // 마지막 시작 시점(ms since epoch)
+  let elapsed = 0;     // 이전까지 누적된 시간(ms)
+  let rafId = null;
+
+  function renderSw() {
+    const now = running ? (Date.now() - startedAt + elapsed) : elapsed;
+    const totalMs = Math.max(0, now);
+    const h = Math.floor(totalMs / 3600000);
+    const m = Math.floor(totalMs / 60000) % 60;
+    const s = Math.floor(totalMs / 1000) % 60;
+    const ds = Math.floor((totalMs % 1000) / 100);
+    // 앞자리 0 그룹은 숨김 (n시 n분 n.n초)
+    hGrp.classList.toggle('show', h > 0);
+    mGrp.classList.toggle('show', h > 0 || m > 0);
+    hEl.textContent = h;
+    mEl.textContent = (h > 0) ? String(m).padStart(2, '0') : m;
+    sEl.textContent = (h > 0 || m > 0) ? String(s).padStart(2, '0') : s;
+    dsEl.textContent = ds;
+  }
+
+  function tick() {
+    renderSw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function start() {
+    if (running) return;
+    running = true;
+    startedAt = Date.now();
+    btnToggle.textContent = '정지';
+    btnToggle.classList.add('running');
+    swEl.classList.add('running');
+    liveDot.classList.add('on');
+    btnReset.disabled = true;  // 실행 중에는 초기화 잠금 (실수 방지)
+    tick();
+  }
+
+  function stop() {
+    if (!running) return;
+    running = false;
+    elapsed += Date.now() - startedAt;
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = null;
+    btnToggle.textContent = '시작';
+    btnToggle.classList.remove('running');
+    swEl.classList.remove('running');
+    liveDot.classList.remove('on');
+    btnReset.disabled = false;
+    renderSw();
+  }
+
+  function reset() {
+    if (running) return;
+    elapsed = 0;
+    startedAt = 0;
+    renderSw();
+  }
+
+  btnToggle.addEventListener('click', () => {
+    if (running) stop(); else start();
+  });
+  btnReset.addEventListener('click', reset);
+
+  // 스페이스바 = 토글, R = 초기화 (데스크톱 편의)
+  document.addEventListener('keydown', (e) => {
+    if (e.target.matches('input, textarea')) return;
+    if (e.code === 'Space') { e.preventDefault(); btnToggle.click(); }
+    else if (e.key === 'r' || e.key === 'R') { if (!running) reset(); }
+  });
+
+  renderSw();
+
+  // ============ Service Worker ============
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

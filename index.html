@@ -80,9 +80,10 @@
   .sw-time {
     font-family: 'Anton', 'Bebas Neue', 'Impact', sans-serif;
     font-variant-numeric: tabular-nums;
-    font-size: clamp(64px, 20vw, 220px);
+    font-feature-settings: 'tnum' 1, 'lnum' 1;
+    font-size: clamp(120px, 42vw, 400px);
     font-weight: 400;
-    letter-spacing: 1px;
+    letter-spacing: 0;
     line-height: 0.9;
     color: var(--fg);
     display: flex;
@@ -90,14 +91,27 @@
     justify-content: center;
     flex-wrap: nowrap;
     gap: 0;
+    transform-origin: center center;
+    will-change: transform;
   }
-  .clock-time { gap: 12px; }
+  .clock-time { gap: 0.12em; }
   .clock-time .ampm {
     font-family: 'Bebas Neue', 'Impact', sans-serif;
     font-size: 0.32em;
     font-weight: 400;
     letter-spacing: 4px;
     color: var(--muted);
+  }
+  /* 각 자릿수 고정 너비 (숫자마다 폭 달라도 흔들리지 않음) */
+  .digit {
+    display: inline-block;
+    width: 0.62em;
+    text-align: center;
+  }
+  .clock-time .colon {
+    display: inline-block;
+    width: 0.35em;
+    text-align: center;
   }
 
   /* 스톱워치 패널 */
@@ -186,20 +200,26 @@
   /* ============ 가로 모드 (Landscape) ============ */
   @media (orientation: landscape) {
     body {
-      flex-direction: row;
-      justify-content: space-evenly;
+      /* Grid 고정 컬럼으로 좌우 폭 흔들림 방지 */
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr;
+      justify-items: center;
       align-items: center;
-      gap: clamp(12px, 3vw, 40px);
+      flex-direction: initial;
+      justify-content: initial;
+      gap: clamp(12px, 2.4vw, 32px);
+      overflow: hidden;
     }
-    .section { width: auto; }
-    /* 가로일 땐 vh 기반으로 화면 꽉 채움. 시계·스톱워치 크기 동일. */
+    .section { width: 100%; min-width: 0; }
+    /* 가로일 땐 vh 기반, 시계·스톱워치 크기 동일 */
     .clock-time,
     .sw-time {
-      font-size: clamp(72px, 32vh, 240px);
+      font-size: clamp(120px, 55vh, 400px);
       line-height: 0.9;
     }
     .sw-panel {
-      padding: clamp(8px, 2vh, 16px) 0;
+      padding: clamp(6px, 1.5vh, 14px) 0;
       gap: clamp(14px, 3vh, 28px);
     }
     .btn {
@@ -250,6 +270,28 @@
     lastTouchEnd = now;
   }, { passive: false });
 
+  // 각 문자를 fixed-width span으로 감싸서 폭 흔들림 제거
+  function digitSpans(str) {
+    let out = '';
+    for (const c of str) {
+      if (c === ':') out += `<span class="colon">${c}</span>`;
+      else out += `<span class="digit">${c}</span>`;
+    }
+    return out;
+  }
+
+  // 컨텐츠가 부모 폭보다 넓으면 transform:scale로 축소 (레이아웃 흔들림 없음)
+  function scaleFit(el) {
+    el.style.transform = '';
+    const parent = el.parentElement;
+    const avail = parent.clientWidth * 0.98;
+    const natural = el.scrollWidth;
+    if (natural > 0 && natural > avail) {
+      const scale = avail / natural;
+      el.style.transform = `scale(${scale})`;
+    }
+  }
+
   // ============ 현재 시각 ============
   const clockEl = document.getElementById('clockTime');
   const ampmEl = clockEl.querySelector('.ampm');
@@ -263,7 +305,8 @@
     let hh = h % 12;
     if (hh === 0) hh = 12;
     ampmEl.textContent = isPm ? 'PM' : 'AM';
-    digitsEl.textContent = `${hh}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    digitsEl.innerHTML = digitSpans(`${hh}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`);
+    scaleFit(clockEl);
   }
   updateClock();
   setInterval(updateClock, 1000);
@@ -295,10 +338,11 @@
     // 앞자리 0 그룹은 숨김 (n시 n분 n.n초)
     hGrp.classList.toggle('show', h > 0);
     mGrp.classList.toggle('show', h > 0 || m > 0);
-    hEl.textContent = h;
-    mEl.textContent = (h > 0) ? String(m).padStart(2, '0') : m;
-    sEl.textContent = (h > 0 || m > 0) ? String(s).padStart(2, '0') : s;
-    dsEl.textContent = ds;
+    hEl.innerHTML = digitSpans(String(h));
+    mEl.innerHTML = digitSpans((h > 0) ? String(m).padStart(2, '0') : String(m));
+    sEl.innerHTML = digitSpans((h > 0 || m > 0) ? String(s).padStart(2, '0') : String(s));
+    dsEl.innerHTML = digitSpans(String(ds));
+    scaleFit(swEl);
   }
 
   function tick() {
@@ -352,6 +396,15 @@
   });
 
   renderSw();
+
+  // 방향 전환/리사이즈 시 스케일 재계산
+  window.addEventListener('resize', () => {
+    scaleFit(clockEl);
+    scaleFit(swEl);
+  });
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => { scaleFit(clockEl); scaleFit(swEl); }, 100);
+  });
 
   // ============ Service Worker ============
   if ('serviceWorker' in navigator) {

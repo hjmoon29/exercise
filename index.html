@@ -61,6 +61,7 @@
     text-align: center;
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
     flex: 0 0 auto;
   }
@@ -89,8 +90,6 @@
     display: block;
     text-align: center;
     white-space: nowrap;
-    transform-origin: center center;
-    will-change: transform;
   }
   .clock-time .digits,
   .sw-time .digits {
@@ -111,12 +110,14 @@
 
   /* 스톱워치 패널 */
   .sw-panel {
+    width: 100%;
     padding: clamp(8px, 1.6vmin, 16px) 0;
     background: transparent;
     border: none;
     border-radius: 0;
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
     gap: clamp(14px, 3vmin, 28px);
   }
@@ -142,10 +143,13 @@
     display: flex;
     gap: clamp(8px, 2vmin, 16px);
     justify-content: center;
+    align-items: center;
+    width: fit-content;
+    margin: 0 auto;
   }
   .btn {
-    flex: 1;
-    max-width: 260px;
+    flex: 0 0 auto;
+    min-width: clamp(130px, 34vw, 200px);
     padding: clamp(14px, 3vmin, 22px) clamp(20px, 4vmin, 32px);
     font-family: 'Bebas Neue', 'Impact', sans-serif;
     font-size: clamp(15px, 3vmin, 22px);
@@ -264,15 +268,16 @@
     return out;
   }
 
-  // 컨텐츠가 부모 폭보다 넓으면 transform:scale로 축소 (레이아웃 흔들림 없음)
+  // 컨텐츠가 부모 폭보다 넓으면 font-size를 실제로 줄여서 레이아웃 폭 = 시각 폭 유지
+  // (transform:scale은 레이아웃 폭이 원본이라 아래 버튼과 정렬 어긋남)
   function scaleFit(el) {
-    el.style.transform = '';
+    el.style.fontSize = '';
     const parent = el.parentElement;
-    const avail = parent.clientWidth * 0.96;
+    const avail = parent.clientWidth * 0.98;
     const natural = el.scrollWidth;
-    if (natural > 0 && natural > avail) {
-      const scale = avail / natural;
-      el.style.transform = `scale(${scale})`;
+    if (natural > avail && natural > 0) {
+      const cur = parseFloat(getComputedStyle(el).fontSize);
+      el.style.fontSize = (cur * (avail / natural)) + 'px';
     }
   }
 

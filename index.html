@@ -49,9 +49,9 @@
     justify-content: center;
     min-height: 100dvh;
     height: 100dvh;
-    padding: max(16px, env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
-    padding-left: max(16px, env(safe-area-inset-left));
-    padding-right: max(16px, env(safe-area-inset-right));
+    padding: max(16px, env(safe-area-inset-top)) 8px calc(16px + env(safe-area-inset-bottom));
+    padding-left: max(8px, env(safe-area-inset-left));
+    padding-right: max(8px, env(safe-area-inset-right));
     gap: clamp(14px, 3.5vmin, 32px);
     overflow: hidden;
   }
@@ -81,7 +81,7 @@
     font-family: 'Anton', 'Bebas Neue', 'Impact', sans-serif;
     font-variant-numeric: tabular-nums;
     font-feature-settings: 'tnum' 1, 'lnum' 1;
-    font-size: clamp(88px, 21vw, 240px);
+    font-size: clamp(120px, 28vw, 320px);
     font-weight: 400;
     letter-spacing: 0;
     line-height: 0.9;
@@ -100,12 +100,12 @@
   /* 각 자릿수 고정 너비 (숫자마다 폭 달라도 흔들리지 않음) */
   .digit {
     display: inline-block;
-    width: 0.62em;
+    width: 0.58em;
     text-align: center;
   }
   .colon {
     display: inline-block;
-    width: 0.28em;
+    width: 0.22em;
     text-align: center;
   }
 

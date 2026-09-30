@@ -204,7 +204,8 @@
     }
     .clock-time,
     .sw-time {
-      font-size: clamp(88px, 26vh, 260px);
+      /* 버튼이 좌우 fixed로 빠지면서 세로 여유 확보 → 폰트 상향 */
+      font-size: clamp(96px, 36vh, 340px);
       line-height: 0.9;
     }
     .sw-panel {
@@ -236,6 +237,36 @@
     .sw-time {
       transform: scaleY(1.05);
       transform-origin: center;
+    }
+  }
+
+  /* ============ 가로 모드: 시작/초기화를 화면 좌우로 큰 원형 버튼 배치 ============ */
+  @media (orientation: landscape) {
+    .controls {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%;
+      justify-content: space-between;
+      padding: 0 clamp(16px, 4vw, 48px);
+      padding-left: max(clamp(16px, 4vw, 48px), env(safe-area-inset-left));
+      padding-right: max(clamp(16px, 4vw, 48px), env(safe-area-inset-right));
+      gap: 0;
+      margin: 0;
+      z-index: 10;
+      pointer-events: none; /* 가운데 빈 공간은 클릭 통과 */
+    }
+    .controls .btn {
+      aspect-ratio: 1;             /* 정사각(원형) — 가로세로 1:1 */
+      width: clamp(96px, 22vh, 160px);
+      min-width: 0;
+      padding: 0;
+      border-radius: 50%;
+      letter-spacing: 2px;
+      font-size: clamp(14px, 2.6vh, 20px);
+      pointer-events: auto;
     }
   }
 </style>

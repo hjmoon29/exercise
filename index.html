@@ -240,6 +240,13 @@
     }
   }
 
+  /* ============ 세로 모드: 숫자와 시작/초기화 버튼 사이 여백 살짝 확대 ============ */
+  @media (orientation: portrait) {
+    .sw-panel {
+      gap: clamp(26px, 5vmin, 48px);
+    }
+  }
+
   /* ============ 가로 모드: 숫자 영역이 좌우 원형 버튼과 붙지 않도록 여백 확보 ============ */
   @media (orientation: landscape) {
     .section {

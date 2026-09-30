@@ -289,30 +289,37 @@
     margin-bottom: 8px;
     border-bottom: 1px solid var(--line);
   }
-  /* 날짜/시간을 한 줄에, 시간이 더 크게 (fitRow가 폭 초과 시 자동 축소) */
+  /* 날짜/시간을 한 줄에 강제, 시간이 더 크게 (fitRow가 폭 초과 시 자동 축소) */
   .wh-meta {
     display: flex;
     flex-direction: row;
+    flex-wrap: nowrap;
     align-items: baseline;
     justify-content: space-between;
     gap: 12px;
     padding: 0 4px;
+    width: 100%;
+    overflow: hidden;
   }
   .wh-date {
     font-family: 'Anton', sans-serif;
-    font-size: clamp(28px, 8vw, 48px);   /* 시간보다 작게 */
+    font-size: clamp(24px, 7vw, 44px);   /* 시간보다 작게 */
     line-height: 1;
     letter-spacing: 1px;
     white-space: nowrap;
+    min-width: 0;
+    flex-shrink: 1;
   }
   .wh-time {
     font-family: 'Anton', sans-serif;
-    font-size: clamp(42px, 12vw, 72px);  /* 시간을 더 크게 */
+    font-size: clamp(36px, 11vw, 68px);  /* 시간을 더 크게 */
     color: var(--muted);
     font-variant-numeric: tabular-nums;
     line-height: 1;
     letter-spacing: 1px;
     white-space: nowrap;
+    min-width: 0;
+    flex-shrink: 1;
   }
 
   .wh-sw {
@@ -1006,7 +1013,7 @@
     todayTimeEl.textContent = t;
     if (lmClockEl) lmClockEl.textContent = t;
   }
-  setInterval(renderTodayHero, 1000);
+  setInterval(() => renderTodayHero(), 1000);  // 화살표로 감싸 재할당된 wrap 버전 반영
   renderTodayHero();
 
   function renderExercises() {

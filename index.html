@@ -13,7 +13,7 @@
 <title>쇠질모드</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Black+Ops+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Black+Ops+One&family=Noto+Sans+KR:wght@300&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #000000;
@@ -198,14 +198,14 @@
     filter: grayscale(1) contrast(20) invert(1);
   }
   .app-title {
-    /* Black Han Sans는 매우 굵어서 시스템 한글 폰트로 얇게 표현 */
-    font-family: -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+    /* Noto Sans KR Light(300)로 가장 얇게. Windows Malgun Gothic은 300 미지원이라 fallback */
+    font-family: "Noto Sans KR", -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
     font-size: clamp(16px, 2.8vmin, 22px);
     letter-spacing: 4px;
     color: var(--fg);
     line-height: 1;
     opacity: 0.9;
-    font-weight: 400;
+    font-weight: 300;
     padding-left: 2px; /* letter-spacing 보정으로 시각적 중앙 정렬 */
   }
 

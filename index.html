@@ -220,6 +220,24 @@
       margin-bottom: clamp(3px, 0.8vh, 8px);
     }
   }
+
+  /* ============ 방향별 살짝 스트레치 (5%) ============ */
+  /* 가로 모드 → 가로로 아주 약간 늘림 */
+  @media (orientation: landscape) {
+    .clock-time,
+    .sw-time {
+      transform: scaleX(1.05);
+      transform-origin: center;
+    }
+  }
+  /* 세로 모드 → 세로로 아주 약간 늘림 */
+  @media (orientation: portrait) {
+    .clock-time,
+    .sw-time {
+      transform: scaleY(1.05);
+      transform-origin: center;
+    }
+  }
 </style>
 </head>
 <body>
@@ -270,10 +288,13 @@
 
   // 컨텐츠가 부모 폭보다 넓으면 font-size를 실제로 줄여서 레이아웃 폭 = 시각 폭 유지
   // (transform:scale은 레이아웃 폭이 원본이라 아래 버튼과 정렬 어긋남)
+  // 가로 모드에서 scaleX(1.05)가 걸려있으면 그만큼 여유공간을 미리 빼서 시각적 잘림 방지
   function scaleFit(el) {
     el.style.fontSize = '';
     const parent = el.parentElement;
-    const avail = parent.clientWidth * 0.98;
+    const isLandscape = window.matchMedia('(orientation: landscape)').matches;
+    const stretchX = isLandscape ? 1.05 : 1.0;
+    const avail = (parent.clientWidth * 0.98) / stretchX;
     const natural = el.scrollWidth;
     if (natural > avail && natural > 0) {
       const cur = parseFloat(getComputedStyle(el).fontSize);
@@ -384,6 +405,21 @@
   });
   window.addEventListener('orientationchange', () => {
     setTimeout(() => { scaleFit(clockEl); scaleFit(swEl); }, 100);
+  });
+
+  // ============ Wake Lock: 앱 활성 중 화면 꺼짐 방지 ============
+  let wakeLock = null;
+  async function acquireWakeLock() {
+    if (!('wakeLock' in navigator)) return;
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    } catch (e) { /* 사용자 제스처 필요/지원 안 함 → 무시 */ }
+  }
+  acquireWakeLock();
+  // 백그라운드→포그라운드 복귀 시 재요청 (OS가 자동 해제하기 때문)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && !wakeLock) acquireWakeLock();
   });
 
   // ============ Service Worker ============

@@ -312,7 +312,7 @@
   }
   .wh-time {
     font-family: 'Anton', sans-serif;
-    font-size: clamp(44px, 14vw, 84px);  /* 시간을 더 크게 (fitRow가 필요 시 축소) */
+    font-size: clamp(56px, 18vw, 108px);  /* 최대한 크게, fitTime이 필요 시 시간만 축소 */
     color: var(--muted);
     font-variant-numeric: tabular-nums;
     line-height: 1;
@@ -1143,31 +1143,29 @@
       el.style.fontSize = (cur * (avail / natural)) + 'px';
     }
   }
-  // 날짜+시간이 같은 줄이라 합쳐서 부모 폭 초과 시 두 요소를 동일 비율로 축소
-  function fitRow(container, children) {
-    if (!container || !container.offsetParent) return;
-    children.forEach(c => { if (c) c.style.fontSize = ''; });
-    const avail = container.clientWidth * 0.98;
+  // 날짜는 그대로 두고 현재 시간만 남은 폭에 맞춰 축소 (사용자 요청: 날짜 유지, 시간 강조)
+  const whMetaEl = document.querySelector('.wh-meta');
+  function fitTime() {
+    if (!todayTimeEl || !todayTimeEl.offsetParent) return;
+    todayTimeEl.style.fontSize = '';  // 스타일 초기화 후 자연 폭 측정
+    const parent = whMetaEl;
+    if (!parent) return;
     const gap = 12;
-    const natural = children.reduce((s, c) => s + (c ? c.scrollWidth : 0), 0) + gap * (children.length - 1);
-    if (natural > avail && natural > 0) {
-      const ratio = avail / natural;
-      children.forEach(c => {
-        if (!c) return;
-        const cur = parseFloat(getComputedStyle(c).fontSize);
-        c.style.fontSize = (cur * ratio) + 'px';
-      });
+    const avail = parent.clientWidth * 0.98 - todayDateEl.scrollWidth - gap;
+    const natural = todayTimeEl.scrollWidth;
+    if (natural > avail && avail > 0 && natural > 0) {
+      const cur = parseFloat(getComputedStyle(todayTimeEl).fontSize);
+      todayTimeEl.style.fontSize = (cur * (avail / natural)) + 'px';
     }
   }
-  const whMetaEl = document.querySelector('.wh-meta');
   function fitHero() {
-    fitRow(whMetaEl, [todayDateEl, todayTimeEl]);
+    fitTime();
     fitToWidth(swDisplay);
   }
   const _origSwRender = swRender;
   swRender = function() { _origSwRender(); fitToWidth(swDisplay); };
   const _origRenderTodayHero = renderTodayHero;
-  renderTodayHero = function() { _origRenderTodayHero(); fitRow(whMetaEl, [todayDateEl, todayTimeEl]); };
+  renderTodayHero = function() { _origRenderTodayHero(); fitTime(); };
   window.addEventListener('resize', fitHero);
   window.addEventListener('orientationchange', () => setTimeout(fitHero, 120));
   swRender();

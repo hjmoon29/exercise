@@ -240,6 +240,16 @@
     }
   }
 
+  /* ============ 가로 모드: 숫자 영역이 좌우 원형 버튼과 붙지 않도록 여백 확보 ============ */
+  @media (orientation: landscape) {
+    .section {
+      /* 버튼 폭 + 바깥 gutter + 숫자↔버튼 사이 여백(20px) 만큼 좌우 안쪽으로 좁힘 */
+      max-width: calc(100% - (clamp(96px, 22vh, 160px) + clamp(16px, 4vw, 48px) + 20px) * 2);
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
   /* ============ 가로 모드: 시작/초기화를 화면 좌우로 큰 원형 버튼 배치 ============ */
   @media (orientation: landscape) {
     .controls {

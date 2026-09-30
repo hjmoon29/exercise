@@ -175,6 +175,36 @@
     cursor: not-allowed;
   }
 
+  /* 상단 앱 헤더 (아이콘 + 명칭) */
+  .app-header {
+    position: fixed;
+    top: max(14px, calc(env(safe-area-inset-top) + 6px));
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: clamp(8px, 1.6vmin, 12px);
+    z-index: 20;
+    pointer-events: none;
+  }
+  .app-icon {
+    width: clamp(22px, 4.5vmin, 30px);
+    height: clamp(22px, 4.5vmin, 30px);
+    object-fit: contain;
+    display: block;
+    opacity: 0.9;
+  }
+  .app-title {
+    font-family: 'Bebas Neue', 'Impact', sans-serif;
+    font-size: clamp(15px, 2.6vmin, 20px);
+    letter-spacing: 5px;
+    color: var(--fg);
+    text-transform: uppercase;
+    line-height: 1;
+    opacity: 0.85;
+    font-weight: 400;
+  }
+
   /* 은은한 heartbeat 도트 (측정중 표시) */
   .live-dot {
     display: inline-block;
@@ -219,6 +249,19 @@
     .label {
       font-size: clamp(10px, 1.8vh, 14px);
       margin-bottom: clamp(3px, 0.8vh, 8px);
+    }
+    /* 가로 모드에서는 상단 헤더 살짝 축소 */
+    .app-header {
+      top: max(8px, env(safe-area-inset-top));
+      gap: 8px;
+    }
+    .app-icon {
+      width: clamp(18px, 3.2vh, 26px);
+      height: clamp(18px, 3.2vh, 26px);
+    }
+    .app-title {
+      font-size: clamp(12px, 2vh, 17px);
+      letter-spacing: 4px;
     }
   }
 
@@ -293,6 +336,11 @@
 </style>
 </head>
 <body>
+  <header class="app-header">
+    <img class="app-icon" src="icon-192.png" alt="">
+    <span class="app-title">Exercise</span>
+  </header>
+
   <div class="section section-clock">
     <div class="label">Now</div>
     <div class="clock-time" id="clockTime">

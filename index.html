@@ -192,13 +192,15 @@
     height: clamp(22px, 4.5vmin, 30px);
     object-fit: contain;
     display: block;
-    opacity: 0.9;
-    /* 원본이 밝은 배경 + 어두운 그림 → 반전으로 어두운 배경 + 밝은 그림 */
-    filter: invert(1);
+    /* 원본: 흰 배경 + 회색 팔뚝
+       → grayscale로 순수 그레이스케일 확정, contrast 20으로 회색을 극한값(0/255)까지 밀어붙인 뒤 invert
+       → 결과: 검은 배경 + 순백 팔뚝 */
+    filter: grayscale(1) contrast(20) invert(1);
   }
   .app-title {
-    font-family: 'Black Han Sans', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-    font-size: clamp(17px, 3vmin, 24px);
+    /* Black Han Sans는 매우 굵어서 시스템 한글 폰트로 얇게 표현 */
+    font-family: -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+    font-size: clamp(16px, 2.8vmin, 22px);
     letter-spacing: 4px;
     color: var(--fg);
     line-height: 1;

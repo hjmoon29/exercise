@@ -195,14 +195,14 @@
     opacity: 0.9;
   }
   .app-title {
-    font-family: 'Bebas Neue', 'Impact', sans-serif;
-    font-size: clamp(15px, 2.6vmin, 20px);
-    letter-spacing: 5px;
+    font-family: 'Black Han Sans', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+    font-size: clamp(17px, 3vmin, 24px);
+    letter-spacing: 4px;
     color: var(--fg);
-    text-transform: uppercase;
     line-height: 1;
-    opacity: 0.85;
+    opacity: 0.9;
     font-weight: 400;
+    padding-left: 2px; /* letter-spacing 보정으로 시각적 중앙 정렬 */
   }
 
   /* 은은한 heartbeat 도트 (측정중 표시) */
@@ -250,19 +250,8 @@
       font-size: clamp(10px, 1.8vh, 14px);
       margin-bottom: clamp(3px, 0.8vh, 8px);
     }
-    /* 가로 모드에서는 상단 헤더 살짝 축소 */
-    .app-header {
-      top: max(8px, env(safe-area-inset-top));
-      gap: 8px;
-    }
-    .app-icon {
-      width: clamp(18px, 3.2vh, 26px);
-      height: clamp(18px, 3.2vh, 26px);
-    }
-    .app-title {
-      font-size: clamp(12px, 2vh, 17px);
-      letter-spacing: 4px;
-    }
+    /* 가로 모드에서는 상단 헤더 숨김 */
+    .app-header { display: none; }
   }
 
   /* ============ 방향별 살짝 스트레치 (5%) ============ */
@@ -338,7 +327,7 @@
 <body>
   <header class="app-header">
     <img class="app-icon" src="icon-192.png" alt="">
-    <span class="app-title">Exercise</span>
+    <span class="app-title">쇠질모드</span>
   </header>
 
   <div class="section section-clock">

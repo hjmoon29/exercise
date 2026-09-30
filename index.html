@@ -302,7 +302,7 @@
   }
   .wh-time {
     font-family: 'Anton', sans-serif;
-    font-size: clamp(24px, 6vw, 36px);
+    font-size: clamp(34px, 8vw, 52px);  /* 날짜와 동일 크기로 */
     color: var(--muted);
     font-variant-numeric: tabular-nums;
     line-height: 1;
@@ -324,7 +324,7 @@
   }
   .wh-sw-display {
     font-family: 'Anton', sans-serif;
-    font-size: clamp(72px, 18vw, 128px);
+    font-size: clamp(96px, 24vw, 180px);  /* 더 크게 */
     line-height: 0.9;
     font-variant-numeric: tabular-nums;
     letter-spacing: 2px;
@@ -601,6 +601,97 @@
 
   /* ============ 스크롤 개선 ============ */
   ::-webkit-scrollbar { width: 0; }
+
+  /* ============ 가로 모드 (기록 탭 한정, 구버전 시계+스톱워치 뷰) ============ */
+  .lm-view {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: var(--bg);
+    padding: 12px 16px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(10px, 2vh, 24px);
+    overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .lm-section {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* 좌우 원형 버튼 자리 확보 후 남은 폭에 맞춤 */
+    max-width: calc(100% - (clamp(112px, 26vh, 190px) + clamp(16px, 4vw, 48px) + 20px) * 2);
+    margin: 0 auto;
+  }
+  .lm-label {
+    font-family: 'Bebas Neue', 'Impact', sans-serif;
+    font-size: clamp(10px, 1.8vh, 14px);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: clamp(3px, 0.8vh, 8px);
+  }
+  .lm-time {
+    font-family: 'Anton', 'Bebas Neue', 'Impact', sans-serif;
+    font-variant-numeric: tabular-nums;
+    font-size: clamp(96px, 36vh, 340px);
+    line-height: 0.9;
+    letter-spacing: 0;
+    color: var(--fg);
+    white-space: nowrap;
+    transform: scaleX(1.05);
+    transform-origin: center;
+  }
+  .lm-round-btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: clamp(112px, 26vh, 190px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1.5px solid var(--fg);
+    font-family: 'Bebas Neue', 'Impact', sans-serif;
+    font-size: clamp(15px, 2.8vh, 22px);
+    letter-spacing: 2px;
+    color: var(--fg);
+    background: transparent;
+    text-transform: uppercase;
+    z-index: 101;
+  }
+  .lm-round-btn.lm-left { left: max(clamp(16px, 4vw, 48px), env(safe-area-inset-left)); }
+  .lm-round-btn.lm-right { right: max(clamp(16px, 4vw, 48px), env(safe-area-inset-right)); }
+  .lm-round-btn.primary { background: var(--fg); color: var(--bg); font-weight: 700; }
+  .lm-round-btn.primary.running { background: transparent; color: var(--fg); }
+  .lm-round-btn:active { transform: translateY(-50%) scale(0.96); }
+  .lm-live-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--fg);
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .lm-live-dot.on {
+    opacity: 1;
+    animation: lmBlink 1s ease-in-out infinite;
+  }
+  @keyframes lmBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.25; }
+  }
+
+  @media (orientation: landscape) {
+    /* 다른 탭들은 가로 미지원: 헤더/GNB/컨텐츠 숨기고 가로 뷰만 노출 */
+    body { padding: 0 !important; }
+    .app-header, .gnb, main.content { display: none !important; }
+    .lm-view { display: flex; }
+  }
 </style>
 </head>
 <body>
@@ -708,6 +799,20 @@
       </div>
     </section>
   </main>
+
+  <!-- ============ 가로 모드 전용 뷰 (구버전 시계+스톱워치) ============ -->
+  <div class="lm-view" aria-hidden="true">
+    <section class="lm-section">
+      <div class="lm-label">Now</div>
+      <div class="lm-time" id="lmClock">00:00:00</div>
+    </section>
+    <section class="lm-section">
+      <div class="lm-label"><span class="lm-live-dot" id="lmLiveDot"></span>Stopwatch</div>
+      <div class="lm-time" id="lmSw">00:00:00</div>
+    </section>
+    <button class="lm-round-btn lm-left primary" id="lmToggle">시작</button>
+    <button class="lm-round-btn lm-right" id="lmReset">리셋</button>
+  </div>
 
   <nav class="gnb">
     <button class="gnb-btn active" data-target="schedule">
@@ -872,11 +977,14 @@
   const exListEl = document.getElementById('exerciseList');
   const exInput = document.getElementById('exerciseInput');
 
+  const lmClockEl = document.getElementById('lmClock');
   function renderTodayHero() {
     const d = new Date();
     const dow = ['일','월','화','수','목','금','토'][d.getDay()];
     todayDateEl.textContent = `${pad2(d.getMonth()+1)}.${pad2(d.getDate())} (${dow})`;
-    todayTimeEl.textContent = `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+    const t = `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+    todayTimeEl.textContent = t;
+    if (lmClockEl) lmClockEl.textContent = t;
   }
   setInterval(renderTodayHero, 1000);
   renderTodayHero();
@@ -946,38 +1054,54 @@
   exInput.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('exerciseAdd').click(); });
   renderExercises();
 
-  // ============ 스톱워치 ============
+  // ============ 스톱워치 (세로 wh-sw-display + 가로 lm-sw 동시 업데이트) ============
   const swDisplay = document.getElementById('swDisplay');
   const swToggle = document.getElementById('swToggle');
   const swReset = document.getElementById('swReset');
+  const lmSw = document.getElementById('lmSw');
+  const lmToggle = document.getElementById('lmToggle');
+  const lmReset = document.getElementById('lmReset');
+  const lmLiveDot = document.getElementById('lmLiveDot');
   let swRunning = false, swStart = 0, swElapsed = 0, swRaf = null;
   function swRender() {
     const now = swRunning ? (Date.now() - swStart + swElapsed) : swElapsed;
     const total = Math.max(0, Math.floor(now / 1000));
     const h = Math.floor(total/3600), m = Math.floor(total/60)%60, s = total%60;
-    swDisplay.textContent = `${pad2(h)}:${pad2(m)}:${pad2(s)}`;
+    const str = `${pad2(h)}:${pad2(m)}:${pad2(s)}`;
+    swDisplay.textContent = str;
+    if (lmSw) lmSw.textContent = str;
   }
   function swTick() { swRender(); swRaf = requestAnimationFrame(swTick); }
-  swToggle.addEventListener('click', () => {
-    if (swRunning) {
-      swRunning = false;
-      swElapsed += Date.now() - swStart;
-      if (swRaf) cancelAnimationFrame(swRaf);
-      swRaf = null;
-      swToggle.textContent = '시작';
-      swDisplay.classList.remove('running');
-    } else {
-      swRunning = true;
-      swStart = Date.now();
-      swToggle.textContent = '정지';
-      swDisplay.classList.add('running');
-      swTick();
-    }
-  });
-  swReset.addEventListener('click', () => {
+  function swStartFn() {
+    if (swRunning) return;
+    swRunning = true;
+    swStart = Date.now();
+    swToggle.textContent = '정지';
+    swDisplay.classList.add('running');
+    if (lmToggle) { lmToggle.textContent = '정지'; lmToggle.classList.add('running'); }
+    if (lmLiveDot) lmLiveDot.classList.add('on');
+    swTick();
+  }
+  function swStopFn() {
+    if (!swRunning) return;
+    swRunning = false;
+    swElapsed += Date.now() - swStart;
+    if (swRaf) cancelAnimationFrame(swRaf);
+    swRaf = null;
+    swToggle.textContent = '시작';
+    swDisplay.classList.remove('running');
+    if (lmToggle) { lmToggle.textContent = '시작'; lmToggle.classList.remove('running'); }
+    if (lmLiveDot) lmLiveDot.classList.remove('on');
+    swRender();
+  }
+  function swResetFn() {
     if (swRunning) return;
     swElapsed = 0; swStart = 0; swRender();
-  });
+  }
+  swToggle.addEventListener('click', () => swRunning ? swStopFn() : swStartFn());
+  swReset.addEventListener('click', swResetFn);
+  if (lmToggle) lmToggle.addEventListener('click', () => swRunning ? swStopFn() : swStartFn());
+  if (lmReset) lmReset.addEventListener('click', swResetFn);
   swRender();
 
   // ============ 3. 쇠스탯 ============

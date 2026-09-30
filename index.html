@@ -278,63 +278,81 @@
     font-size: 14px;
   }
 
-  /* ============ 쇠기록 (운동로그 + 스톱워치) ============ */
-  .today-hero {
-    padding: 6px 2px 18px;
+  /* ============ 기록: 상단 히어로 (날짜/시간/스톱워치가 화면 절반) ============ */
+  .workout-hero {
+    min-height: 50vh;
+    padding: 18px 4px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .wh-meta {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: baseline;
   }
-  .today-date {
+  .wh-date {
     font-family: 'Anton', sans-serif;
-    font-size: 28px;
+    font-size: clamp(34px, 8vw, 52px);
     line-height: 1;
-  }
-  .today-time {
-    font-family: 'Anton', sans-serif;
-    font-size: 20px;
-    color: var(--muted);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .stopwatch-card {
-    padding: 16px;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: var(--panel);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 6px;
-  }
-  .sw-display {
-    font-family: 'Anton', sans-serif;
-    font-size: 34px;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
     letter-spacing: 1px;
   }
-  .sw-display.running { color: var(--fg); }
-  .sw-controls {
-    display: flex;
-    gap: 8px;
+  .wh-time {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(24px, 6vw, 36px);
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
   }
-  .sw-controls button {
-    padding: 10px 16px;
+
+  .wh-sw {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex: 1;
+  }
+  .wh-sw-label {
+    font-family: 'Bebas Neue', 'Impact', sans-serif;
+    font-size: 13px;
+    letter-spacing: 6px;
+    color: var(--muted);
+  }
+  .wh-sw-display {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(72px, 18vw, 128px);
+    line-height: 0.9;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 2px;
+    color: var(--fg);
+  }
+  .wh-sw-display.running { color: var(--fg); }
+  .wh-sw-controls {
+    display: flex;
+    gap: 12px;
+    margin-top: 6px;
+  }
+  .wh-sw-controls button {
+    padding: 14px 28px;
     border: 1.5px solid var(--fg);
     border-radius: 100px;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 13px;
-    letter-spacing: 2px;
+    font-size: 16px;
+    letter-spacing: 3px;
     color: var(--fg);
     background: transparent;
+    min-width: 100px;
   }
-  .sw-controls button.primary {
+  .wh-sw-controls button.primary {
     background: var(--fg);
     color: var(--bg);
+    font-weight: 700;
   }
-  .sw-controls button:active { transform: scale(0.96); }
+  .wh-sw-controls button:active { transform: scale(0.96); }
 
   .exercise-list {
     display: flex;
@@ -617,18 +635,20 @@
       </div>
     </section>
 
-    <!-- ============ TAB 2: 쇠기록 ============ -->
+    <!-- ============ TAB 2: 기록 ============ -->
     <section class="tab-panel" data-tab="workout" hidden>
-      <div class="today-hero">
-        <div class="today-date" id="todayDate">MM.DD (요일)</div>
-        <div class="today-time" id="todayTime">00:00:00</div>
-      </div>
-
-      <div class="stopwatch-card">
-        <div class="sw-display" id="swDisplay">00:00:00</div>
-        <div class="sw-controls">
-          <button class="primary" id="swToggle">시작</button>
-          <button id="swReset">리셋</button>
+      <div class="workout-hero">
+        <div class="wh-meta">
+          <div class="wh-date" id="todayDate">MM.DD (요일)</div>
+          <div class="wh-time" id="todayTime">00:00:00</div>
+        </div>
+        <div class="wh-sw">
+          <div class="wh-sw-label">STOPWATCH</div>
+          <div class="wh-sw-display" id="swDisplay">00:00:00</div>
+          <div class="wh-sw-controls">
+            <button class="primary" id="swToggle">시작</button>
+            <button id="swReset">리셋</button>
+          </div>
         </div>
       </div>
 
@@ -691,13 +711,13 @@
 
   <nav class="gnb">
     <button class="gnb-btn active" data-target="schedule">
-      <span class="gnb-icon">CAL</span><span>쇠일정</span>
+      <span class="gnb-icon">CAL</span><span>일정</span>
     </button>
     <button class="gnb-btn" data-target="workout">
-      <span class="gnb-icon">LOG</span><span>쇠기록</span>
+      <span class="gnb-icon">LOG</span><span>기록</span>
     </button>
     <button class="gnb-btn" data-target="stats">
-      <span class="gnb-icon">1RM</span><span>쇠스탯</span>
+      <span class="gnb-icon">1RM</span><span>스탯</span>
     </button>
   </nav>
 

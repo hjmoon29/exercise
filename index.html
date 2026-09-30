@@ -6,11 +6,11 @@
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Exercise">
+<meta name="apple-mobile-web-app-title" content="쇠질모드">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Exercise</title>
+<title>쇠질모드</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Black+Ops+One&display=swap" rel="stylesheet">
@@ -193,6 +193,8 @@
     object-fit: contain;
     display: block;
     opacity: 0.9;
+    /* 원본이 밝은 배경 + 어두운 그림 → 반전으로 어두운 배경 + 밝은 그림 */
+    filter: invert(1);
   }
   .app-title {
     font-family: 'Black Han Sans', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;

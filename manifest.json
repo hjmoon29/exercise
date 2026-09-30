@@ -1,6 +1,6 @@
 {
-  "name": "Exercise",
-  "short_name": "Exercise",
+  "name": "쇠질모드",
+  "short_name": "쇠질모드",
   "description": "현재 시각과 스톱워치, 딱 그거만.",
   "start_url": "./",
   "scope": "./",

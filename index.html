@@ -865,11 +865,12 @@
   function switchTab(target) {
     panels.forEach(p => { p.hidden = (p.dataset.tab !== target); });
     gnbBtns.forEach(b => b.classList.toggle('active', b.dataset.target === target));
-    // 기록 탭 진입 시 히어로(날짜/시간/스톱워치) 폰트 재적합
+    // 기록 탭 진입 시 히어로 폰트 재적합 + Wake Lock 확보 (화면 꺼짐 방지)
     if (target === 'workout') {
       requestAnimationFrame(() => {
         if (typeof swRender === 'function') swRender();
         if (typeof renderTodayHero === 'function') renderTodayHero();
+        if (window._acquireWakeLock) window._acquireWakeLock();
       });
     }
   }
@@ -1233,19 +1234,34 @@
   });
   renderBig3();
 
-  // ============ Wake Lock ============
+  // ============ Wake Lock (기록 탭·스톱워치 사용 중 화면 꺼짐 방지) ============
   let wakeLock = null;
   async function acquireWakeLock() {
     if (!('wakeLock' in navigator)) return;
+    if (wakeLock) return; // 중복 요청 방지
     try {
       wakeLock = await navigator.wakeLock.request('screen');
       wakeLock.addEventListener('release', () => { wakeLock = null; });
-    } catch {}
+    } catch { /* NotAllowedError 등 무시 */ }
   }
+  async function releaseWakeLock() {
+    if (!wakeLock) return;
+    try { await wakeLock.release(); } catch {}
+    wakeLock = null;
+  }
+  // 초기 시도 (제스처 없어 실패할 수 있음)
   acquireWakeLock();
+  // 사용자 첫 탭/클릭 시 확실히 재요청
+  document.addEventListener('click', () => acquireWakeLock(), { once: false });
+  // 백그라운드 복귀 시 재요청
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && !wakeLock) acquireWakeLock();
+    if (document.visibilityState === 'visible') acquireWakeLock();
   });
+  // 스톱워치 시작 시에도 명시적으로 확보
+  const _origSwStart = swStartFn;
+  swStartFn = function() { _origSwStart(); acquireWakeLock(); };
+  // switchTab에서 기록 탭 진입 시 wake lock 확보 (아래에서 참조)
+  window._acquireWakeLock = acquireWakeLock;
 
   // ============ 초기 ============
   renderCalendar();

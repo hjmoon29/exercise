@@ -1217,14 +1217,24 @@
     if (!parent) return;
     fitDigitDisplay(swDisplay, parent.clientWidth * 0.98);
   }
+  // 가로 모드 lm-clock / lm-sw는 scaleX(1.05) 적용이라 5% 여유를 미리 빼고 fit
+  function fitLandscapeTime(el) {
+    if (!el || !el.offsetParent) return;
+    const section = el.parentElement;
+    if (!section) return;
+    const avail = (section.clientWidth * 0.98) / 1.05;
+    fitDigitDisplay(el, avail);
+  }
   function fitHero() {
     fitTime();
     fitSwDisplayCentered();
+    fitLandscapeTime(lmClockEl);
+    fitLandscapeTime(lmSw);
   }
   const _origSwRender = swRender;
-  swRender = function() { _origSwRender(); fitSwDisplayCentered(); };
+  swRender = function() { _origSwRender(); fitSwDisplayCentered(); fitLandscapeTime(lmSw); };
   const _origRenderTodayHero = renderTodayHero;
-  renderTodayHero = function() { _origRenderTodayHero(); fitTime(); };
+  renderTodayHero = function() { _origRenderTodayHero(); fitTime(); fitLandscapeTime(lmClockEl); };
   window.addEventListener('resize', fitHero);
   window.addEventListener('orientationchange', () => setTimeout(fitHero, 120));
   swRender();

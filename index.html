@@ -1348,10 +1348,31 @@
   // ============ 초기 ============
   renderCalendar();
 
-  // ============ Service Worker ============
+  // ============ Service Worker (신규 버전 자동 활성화) ============
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
+      navigator.serviceWorker.register('sw.js').then(reg => {
+        // 페이지 열릴 때마다 업데이트 확인
+        reg.update();
+        // 새 버전이 대기 중이면 즉시 활성화 → 다음 새로고침에 반영
+        if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+        reg.addEventListener('updatefound', () => {
+          const nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener('statechange', () => {
+            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+              nw.postMessage({ type: 'SKIP_WAITING' });
+            }
+          });
+        });
+      }).catch(() => {});
+      // 컨트롤러가 바뀌면 페이지 자동 리로드 (한 번만)
+      let refreshed = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshed) return;
+        refreshed = true;
+        window.location.reload();
+      });
     });
   }
 </script>

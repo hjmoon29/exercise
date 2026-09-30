@@ -312,7 +312,7 @@
   }
   .wh-time {
     font-family: 'Anton', sans-serif;
-    font-size: clamp(56px, 18vw, 108px);  /* 최대한 크게, fitTime이 필요 시 시간만 축소 */
+    font-size: clamp(64px, 21vw, 128px);  /* 더 크게 (fitTime이 필요 시 시간만 축소) */
     color: var(--muted);
     font-variant-numeric: tabular-nums;
     line-height: 1;
@@ -320,6 +320,21 @@
     white-space: nowrap;
     min-width: 0;
     flex-shrink: 1;
+  }
+  /* 자릿수 폭 고정: 1/8 등 어떤 숫자든 동일 폭 (Anton은 tabular-nums 미지원) */
+  .wh-time .digit,
+  .wh-sw-display .digit,
+  .lm-time .digit {
+    display: inline-block;
+    width: 0.58em;
+    text-align: center;
+  }
+  .wh-time .colon,
+  .wh-sw-display .colon,
+  .lm-time .colon {
+    display: inline-block;
+    width: 0.24em;
+    text-align: center;
   }
 
   .wh-sw {
@@ -850,6 +865,15 @@
   const pad2 = (n) => String(n).padStart(2, '0');
   const dateKey = (d) => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
   const todayKey = () => dateKey(new Date());
+  // HH:MM:SS 각 자릿수를 고정폭 span으로 감싸서 숫자값(1/8 등)에 관계없이 폭 유지
+  function digitSpans(str) {
+    let out = '';
+    for (const c of str) {
+      if (c === ':') out += `<span class="colon">${c}</span>`;
+      else out += `<span class="digit">${c}</span>`;
+    }
+    return out;
+  }
   const store = {
     get(k, def) {
       try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch { return def; }
@@ -1010,8 +1034,8 @@
     const dow = ['일','월','화','수','목','금','토'][d.getDay()];
     todayDateEl.textContent = `${pad2(d.getMonth()+1)}.${pad2(d.getDate())} (${dow})`;
     const t = `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
-    todayTimeEl.textContent = t;
-    if (lmClockEl) lmClockEl.textContent = t;
+    todayTimeEl.innerHTML = digitSpans(t);
+    if (lmClockEl) lmClockEl.innerHTML = digitSpans(t);
   }
   setInterval(() => renderTodayHero(), 1000);  // 화살표로 감싸 재할당된 wrap 버전 반영
   renderTodayHero();
@@ -1095,8 +1119,8 @@
     const total = Math.max(0, Math.floor(now / 1000));
     const h = Math.floor(total/3600), m = Math.floor(total/60)%60, s = total%60;
     const str = `${pad2(h)}:${pad2(m)}:${pad2(s)}`;
-    swDisplay.textContent = str;
-    if (lmSw) lmSw.textContent = str;
+    swDisplay.innerHTML = digitSpans(str);
+    if (lmSw) lmSw.innerHTML = digitSpans(str);
   }
   function swTick() { swRender(); swRaf = requestAnimationFrame(swTick); }
   function swStartFn() {

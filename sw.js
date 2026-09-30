@@ -1,5 +1,5 @@
 // 배포마다 CACHE 상수 bump 필수
-const CACHE = 'exercise-v26';
+const CACHE = 'exercise-v27';
 const ASSETS = [
   './',
   'index.html',

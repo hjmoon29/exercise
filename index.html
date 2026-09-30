@@ -289,30 +289,30 @@
     margin-bottom: 8px;
     border-bottom: 1px solid var(--line);
   }
-  /* 날짜/시간을 세로로 쌓아 각자 넓은 폭 확보 → 폰트 더 크게 가능 */
+  /* 날짜/시간을 한 줄에, 시간이 더 크게 (fitRow가 폭 초과 시 자동 축소) */
   .wh-meta {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 4px;
   }
   .wh-date {
     font-family: 'Anton', sans-serif;
-    font-size: clamp(44px, 12vw, 74px);
+    font-size: clamp(28px, 8vw, 48px);   /* 시간보다 작게 */
     line-height: 1;
     letter-spacing: 1px;
     white-space: nowrap;
-    text-align: center;
   }
   .wh-time {
     font-family: 'Anton', sans-serif;
-    font-size: clamp(72px, 20vw, 120px);
+    font-size: clamp(42px, 12vw, 72px);  /* 시간을 더 크게 */
     color: var(--muted);
     font-variant-numeric: tabular-nums;
     line-height: 1;
     letter-spacing: 1px;
     white-space: nowrap;
-    text-align: center;
   }
 
   .wh-sw {
@@ -656,6 +656,8 @@
     transform: scaleX(1.05);
     transform-origin: center;
   }
+  /* 가로 모드 현재 시각(Now)은 세로 wh-time과 동일한 muted 회색 처리 */
+  #lmClock { color: var(--muted); }
   .lm-round-btn {
     position: fixed;
     top: 50%;
@@ -1134,15 +1136,31 @@
       el.style.fontSize = (cur * (avail / natural)) + 'px';
     }
   }
+  // 날짜+시간이 같은 줄이라 합쳐서 부모 폭 초과 시 두 요소를 동일 비율로 축소
+  function fitRow(container, children) {
+    if (!container || !container.offsetParent) return;
+    children.forEach(c => { if (c) c.style.fontSize = ''; });
+    const avail = container.clientWidth * 0.98;
+    const gap = 12;
+    const natural = children.reduce((s, c) => s + (c ? c.scrollWidth : 0), 0) + gap * (children.length - 1);
+    if (natural > avail && natural > 0) {
+      const ratio = avail / natural;
+      children.forEach(c => {
+        if (!c) return;
+        const cur = parseFloat(getComputedStyle(c).fontSize);
+        c.style.fontSize = (cur * ratio) + 'px';
+      });
+    }
+  }
+  const whMetaEl = document.querySelector('.wh-meta');
   function fitHero() {
-    fitToWidth(todayDateEl);
-    fitToWidth(todayTimeEl);
+    fitRow(whMetaEl, [todayDateEl, todayTimeEl]);
     fitToWidth(swDisplay);
   }
   const _origSwRender = swRender;
   swRender = function() { _origSwRender(); fitToWidth(swDisplay); };
   const _origRenderTodayHero = renderTodayHero;
-  renderTodayHero = function() { _origRenderTodayHero(); fitToWidth(todayDateEl); fitToWidth(todayTimeEl); };
+  renderTodayHero = function() { _origRenderTodayHero(); fitRow(whMetaEl, [todayDateEl, todayTimeEl]); };
   window.addEventListener('resize', fitHero);
   window.addEventListener('orientationchange', () => setTimeout(fitHero, 120));
   swRender();

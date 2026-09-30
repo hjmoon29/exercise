@@ -188,14 +188,14 @@
     pointer-events: none;
   }
   .app-icon {
-    width: clamp(22px, 4.5vmin, 30px);
-    height: clamp(22px, 4.5vmin, 30px);
+    /* blur 대신 아이콘 크기를 살짝 키워 스트로크 굵기 확보 (블러로 인한 흐릿함 제거) */
+    width: clamp(28px, 5.6vmin, 38px);
+    height: clamp(28px, 5.6vmin, 38px);
     object-fit: contain;
     display: block;
     /* 원본: 흰 배경 + 회색 팔뚝
-       → invert(1)로 배경을 검게, brightness(2)로 회색 팔을 흰색까지 밝힘
-       → blur+contrast로 스트로크를 살짝 팽창(morphological dilate)시켜 굵어보이게 */
-    filter: invert(1) brightness(2) blur(0.5px) contrast(1.6);
+       → invert(1)로 배경을 검게, brightness(2)로 회색 팔을 흰색까지 밝힘 (선명) */
+    filter: invert(1) brightness(2);
   }
   .app-title {
     /* Noto Sans KR Light(300)로 가장 얇게. Windows Malgun Gothic은 300 미지원이라 fallback */

@@ -13,319 +13,576 @@
 <title>쇠질모드</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Black+Ops+One&family=Noto+Sans+KR:wght@300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #000000;
-    --fg: #ffffff;
-    --muted: #6b6b6b;
-    --line: rgba(255, 255, 255, 0.14);
-    --panel: rgba(255, 255, 255, 0.04);
-    --btn-bg: #ffffff;
-    --btn-fg: #000000;
-    --btn-bg-alt: transparent;
-    --btn-fg-alt: #ffffff;
-    --danger: #ff3b30;
+    --bg: #000;
+    --fg: #fff;
+    --muted: #7a7a7a;
+    --line: rgba(255,255,255,0.12);
+    --line-strong: rgba(255,255,255,0.28);
+    --panel: rgba(255,255,255,0.04);
+    --accent: #fff;
+    --danger: #ff4b3a;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
-    height: 100%;
     background: var(--bg);
     color: var(--fg);
-    overscroll-behavior: none;
+    font-family: "Noto Sans KR", -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
     -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
     -webkit-text-size-adjust: 100%;
-    -webkit-user-select: none;
-    user-select: none;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Malgun Gothic", sans-serif;
+    overscroll-behavior: none;
+    font-weight: 400;
   }
-  html { height: 100%; }
   body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     min-height: 100dvh;
-    height: 100dvh;
-    padding: max(16px, env(safe-area-inset-top)) 8px calc(16px + env(safe-area-inset-bottom));
-    padding-left: max(8px, env(safe-area-inset-left));
-    padding-right: max(8px, env(safe-area-inset-right));
-    gap: clamp(14px, 3.5vmin, 32px);
-    overflow: hidden;
+    padding-top: calc(56px + env(safe-area-inset-top));
+    padding-bottom: calc(68px + env(safe-area-inset-bottom));
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
   }
 
-  .section {
-    width: 100%;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 auto;
-  }
-
-  .label {
-    font-family: 'Bebas Neue', 'Impact', sans-serif;
-    font-size: clamp(12px, 2.4vmin, 16px);
-    letter-spacing: 6px;
-    text-transform: uppercase;
-    color: var(--muted);
-    font-weight: 400;
-    margin-bottom: clamp(6px, 1.6vmin, 14px);
-  }
-
-  /* 현재 시각 · 스톱워치 공통 숫자 스타일 (완전 동일) */
-  .clock-time,
-  .sw-time {
-    font-family: 'Anton', 'Bebas Neue', 'Impact', sans-serif;
-    font-variant-numeric: tabular-nums;
-    font-feature-settings: 'tnum' 1, 'lnum' 1;
-    font-size: clamp(120px, 28vw, 320px);
-    font-weight: 400;
-    letter-spacing: 0;
-    line-height: 0.9;
-    color: var(--fg);
-    display: block;
-    text-align: center;
-    white-space: nowrap;
-  }
-  .clock-time .digits,
-  .sw-time .digits {
-    display: inline-block;
-    white-space: nowrap;
-  }
-  /* 각 자릿수 고정 너비 (숫자마다 폭 달라도 흔들리지 않음) */
-  .digit {
-    display: inline-block;
-    width: 0.58em;
-    text-align: center;
-  }
-  .colon {
-    display: inline-block;
-    width: 0.22em;
-    text-align: center;
-  }
-
-  /* 스톱워치 패널 */
-  .sw-panel {
-    width: 100%;
-    padding: clamp(8px, 1.6vmin, 16px) 0;
+  input, button, select, textarea {
+    font-family: inherit;
+    color: inherit;
     background: transparent;
     border: none;
-    border-radius: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: clamp(14px, 3vmin, 28px);
+    outline: none;
   }
-  .sw-time .unit {
-    font-family: 'Black Han Sans', 'Anton', sans-serif;
-    font-size: 0.34em;
-    color: var(--muted);
-    font-weight: 400;
-    margin: 0 clamp(4px, 1vmin, 12px) 0 clamp(2px, 0.6vmin, 6px);
-    letter-spacing: 0;
-    line-height: 1;
-  }
-  .sw-time .unit.dot {
-    color: var(--fg);
-    margin: 0 2px;
-  }
-  .sw-time .h, .sw-time .m, .sw-time .s, .sw-time .ds { line-height: 0.9; }
-  .sw-time .hgrp, .sw-time .mgrp { display: none; align-items: baseline; }
-  .sw-time .hgrp.show, .sw-time .mgrp.show { display: inline-flex; }
-  .sw-time.running .ds { color: #ffffff; }
+  button { cursor: pointer; }
 
-  .controls {
-    display: flex;
-    gap: clamp(8px, 2vmin, 16px);
-    justify-content: center;
-    align-items: center;
-    width: fit-content;
-    margin: 0 auto;
-  }
-  .btn {
-    flex: 0 0 auto;
-    min-width: clamp(130px, 34vw, 200px);
-    padding: clamp(18px, 4vmin, 28px) clamp(20px, 4vmin, 32px);
-    font-family: 'Bebas Neue', 'Impact', sans-serif;
-    font-size: clamp(15px, 3vmin, 22px);
-    font-weight: 400;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    border-radius: 100px;
-    border: 1.5px solid var(--fg);
-    cursor: pointer;
-    transition: transform 0.12s ease, background 0.18s ease, color 0.18s ease;
-  }
-  .btn:active { transform: scale(0.97); }
-
-  .btn-primary { background: var(--btn-bg); color: var(--btn-fg); }
-  .btn-primary.running {
-    background: transparent;
-    color: var(--fg);
-    border-color: var(--fg);
-  }
-  .btn-secondary { background: var(--btn-bg-alt); color: var(--btn-fg-alt); }
-  .btn-secondary:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-  }
-
-  /* 상단 앱 헤더 (아이콘 + 명칭) */
+  /* ============ 상단 앱 헤더 ============ */
   .app-header {
     position: fixed;
-    top: max(14px, calc(env(safe-area-inset-top) + 6px));
-    left: 50%;
-    transform: translateX(-50%);
-    display: inline-flex;
+    top: 0; left: 0; right: 0;
+    height: calc(56px + env(safe-area-inset-top));
+    padding-top: env(safe-area-inset-top);
+    display: flex;
     align-items: center;
-    gap: clamp(3px, 0.8vmin, 6px);
-    z-index: 20;
-    pointer-events: none;
+    justify-content: center;
+    gap: 6px;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    z-index: 30;
   }
   .app-icon {
-    /* blur 대신 아이콘 크기를 살짝 키워 스트로크 굵기 확보 (블러로 인한 흐릿함 제거) */
-    width: clamp(28px, 5.6vmin, 38px);
-    height: clamp(28px, 5.6vmin, 38px);
+    width: 26px;
+    height: 26px;
     object-fit: contain;
-    display: block;
-    /* 원본: 흰 배경 + 회색 팔뚝
-       → invert(1)로 배경을 검게, brightness(2)로 회색 팔을 흰색까지 밝힘 (선명) */
     filter: invert(1) brightness(2);
   }
   .app-title {
-    /* Noto Sans KR Light(300)로 가장 얇게. Windows Malgun Gothic은 300 미지원이라 fallback */
-    font-family: "Noto Sans KR", -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-    font-size: clamp(16px, 2.8vmin, 22px);
-    letter-spacing: 4px;
-    color: var(--fg);
-    line-height: 1;
-    opacity: 0.9;
     font-weight: 300;
-    padding-left: 2px; /* letter-spacing 보정으로 시각적 중앙 정렬 */
+    font-size: 17px;
+    letter-spacing: 5px;
+    opacity: 0.92;
   }
 
-  /* 은은한 heartbeat 도트 (측정중 표시) */
-  .live-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    background: var(--fg);
+  /* ============ 콘텐츠 영역 ============ */
+  main.content { display: block; }
+  .tab-panel {
+    padding: 16px 18px 24px;
+    animation: fadeIn 0.18s ease-out;
+  }
+  .tab-panel[hidden] { display: none; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', 'Impact', sans-serif;
+    font-size: 14px;
+    letter-spacing: 4px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin: 18px 2px 10px;
+  }
+  .section-title:first-child { margin-top: 4px; }
+
+  /* ============ GNB ============ */
+  .gnb {
+    position: fixed;
+    left: 0; right: 0;
+    bottom: 0;
+    padding-bottom: env(safe-area-inset-bottom);
+    display: flex;
+    background: rgba(0,0,0,0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+    z-index: 30;
+  }
+  .gnb-btn {
+    flex: 1;
+    padding: 12px 6px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    color: var(--muted);
+    transition: color 0.15s ease;
+  }
+  .gnb-btn .gnb-icon {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    line-height: 1;
+    letter-spacing: 1px;
+  }
+  .gnb-btn.active { color: var(--fg); }
+  .gnb-btn.active .gnb-icon { transform: translateY(-1px); transition: transform 0.15s ease; }
+
+  /* ============ 캘린더 (쇠일정) ============ */
+  .cal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 4px 14px;
+  }
+  .cal-title {
+    font-family: 'Anton', sans-serif;
+    font-size: 30px;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+  .cal-nav {
+    display: flex;
+    gap: 6px;
+  }
+  .cal-nav button {
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    margin-right: 8px;
-    vertical-align: middle;
-    opacity: 0;
-    transition: opacity 0.2s;
+    border: 1px solid var(--line-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--fg);
+    font-size: 18px;
   }
-  .live-dot.on {
-    opacity: 1;
-    animation: blink 1s ease-in-out infinite;
+  .cal-nav button:active { transform: scale(0.94); }
+
+  .cal-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    padding: 0 2px 6px;
   }
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.25; }
+  .cal-weekdays span {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .cal-weekdays span:first-child { color: #ff6a6a; }
+  .cal-weekdays span:last-child { color: #6ab6ff; }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    padding: 0 2px;
+  }
+  .cal-cell {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 15px;
+    color: var(--fg);
+    position: relative;
+    border: 1px solid transparent;
+  }
+  .cal-cell.other-month { color: rgba(255,255,255,0.18); }
+  .cal-cell.today { border-color: var(--fg); font-weight: 700; }
+  .cal-cell.selected { background: var(--fg); color: var(--bg); font-weight: 700; }
+  .cal-cell.has-items::after {
+    content: '';
+    position: absolute;
+    bottom: 6px;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.6;
+  }
+  .cal-cell:active { transform: scale(0.94); transition: transform 0.1s; }
+
+  .schedule-panel {
+    margin-top: 20px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--panel);
+  }
+  .schedule-date {
+    font-family: 'Anton', sans-serif;
+    font-size: 20px;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .schedule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .schedule-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .schedule-item .text { flex: 1; }
+  .schedule-item .del {
+    color: var(--muted);
+    font-size: 18px;
+    padding: 0 4px;
+  }
+  .schedule-item .del:active { color: var(--danger); }
+  .schedule-empty {
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+    padding: 12px 0;
+  }
+  .schedule-form {
+    display: flex;
+    gap: 8px;
+  }
+  .schedule-form input {
+    flex: 1;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    font-size: 14px;
+  }
+  .schedule-form input::placeholder { color: var(--muted); }
+  .schedule-form button {
+    padding: 0 18px;
+    background: var(--fg);
+    color: var(--bg);
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 14px;
   }
 
-  /* ============ 가로 모드 (Landscape) ============ */
-  @media (orientation: landscape) {
-    body {
-      /* 세로 스택 유지하되 gap 축소, vh 기반 폰트로 화면 폭 활용 */
-      gap: clamp(10px, 2vh, 24px);
-    }
-    .clock-time,
-    .sw-time {
-      /* 버튼이 좌우 fixed로 빠지면서 세로 여유 확보 → 폰트 상향 */
-      font-size: clamp(96px, 36vh, 340px);
-      line-height: 0.9;
-    }
-    .sw-panel {
-      padding: clamp(4px, 1vh, 12px) 0;
-      gap: clamp(10px, 2.4vh, 22px);
-    }
-    .btn {
-      padding: clamp(10px, 2vh, 16px) clamp(18px, 4vw, 32px);
-      font-size: clamp(13px, 2.2vh, 18px);
-    }
-    .label {
-      font-size: clamp(10px, 1.8vh, 14px);
-      margin-bottom: clamp(3px, 0.8vh, 8px);
-    }
-    /* 가로 모드에서는 상단 헤더 숨김 */
-    .app-header { display: none; }
+  /* ============ 쇠기록 (운동로그 + 스톱워치) ============ */
+  .today-hero {
+    padding: 6px 2px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .today-date {
+    font-family: 'Anton', sans-serif;
+    font-size: 28px;
+    line-height: 1;
+  }
+  .today-time {
+    font-family: 'Anton', sans-serif;
+    font-size: 20px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
   }
 
-  /* ============ 방향별 살짝 스트레치 (5%) ============ */
-  /* 가로 모드 → 가로로 아주 약간 늘림 */
-  @media (orientation: landscape) {
-    .clock-time,
-    .sw-time {
-      transform: scaleX(1.05);
-      transform-origin: center;
-    }
+  .stopwatch-card {
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--panel);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
   }
-  /* 세로 모드 → 세로로 아주 약간 늘림 */
-  @media (orientation: portrait) {
-    .clock-time,
-    .sw-time {
-      transform: scaleY(1.05);
-      transform-origin: center;
-    }
+  .sw-display {
+    font-family: 'Anton', sans-serif;
+    font-size: 34px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 1px;
+  }
+  .sw-display.running { color: var(--fg); }
+  .sw-controls {
+    display: flex;
+    gap: 8px;
+  }
+  .sw-controls button {
+    padding: 10px 16px;
+    border: 1.5px solid var(--fg);
+    border-radius: 100px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--fg);
+    background: transparent;
+  }
+  .sw-controls button.primary {
+    background: var(--fg);
+    color: var(--bg);
+  }
+  .sw-controls button:active { transform: scale(0.96); }
+
+  .exercise-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .exercise-card {
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--panel);
+  }
+  .exercise-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .exercise-name {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .exercise-head .del {
+    color: var(--muted);
+    font-size: 18px;
+    padding: 2px 6px;
+  }
+  .set-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .set-chip {
+    padding: 5px 10px;
+    background: rgba(255,255,255,0.09);
+    border-radius: 999px;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .set-chip .rm {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0 2px;
+  }
+  .set-input-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .set-input-row input {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 10px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 8px;
+    font-size: 13px;
+    text-align: center;
+  }
+  .set-input-row .add-set {
+    padding: 8px 14px;
+    background: var(--fg);
+    color: var(--bg);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
   }
 
-  /* ============ 세로 모드: 숫자와 시작/초기화 버튼 사이 여백 살짝 확대 ============ */
-  @media (orientation: portrait) {
-    .sw-panel {
-      gap: clamp(56px, 10vmin, 96px);
-    }
-    /* 시작 ↔ 초기화 버튼 간격도 살짝 확대 */
-    .controls {
-      gap: clamp(24px, 5vmin, 44px);
-    }
+  .add-exercise-form {
+    padding: 14px;
+    border: 1px dashed var(--line-strong);
+    border-radius: 12px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 6px;
+  }
+  .add-exercise-form input {
+    flex: 1;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .add-exercise-form input::placeholder { color: var(--muted); }
+  .add-exercise-form button {
+    padding: 10px 18px;
+    background: var(--fg);
+    color: var(--bg);
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
   }
 
-  /* ============ 가로 모드: 숫자 영역이 좌우 원형 버튼과 붙지 않도록 여백 확보 ============ */
-  @media (orientation: landscape) {
-    .section {
-      /* 버튼 폭 + 바깥 gutter + 숫자↔버튼 사이 여백(20px) 만큼 좌우 안쪽으로 좁힘 */
-      max-width: calc(100% - (clamp(112px, 26vh, 190px) + clamp(16px, 4vw, 48px) + 20px) * 2);
-      margin-left: auto;
-      margin-right: auto;
-    }
+  /* ============ 쇠스탯 ============ */
+  .stat-card {
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--panel);
+    margin-bottom: 12px;
+  }
+  .stat-title {
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .weight-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .weight-input-row input {
+    flex: 1;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    font-size: 20px;
+    font-family: 'Anton', sans-serif;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+  .weight-input-row .unit { color: var(--muted); font-size: 14px; padding: 0 4px; }
+  .weight-input-row button {
+    padding: 12px 18px;
+    background: var(--fg);
+    color: var(--bg);
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 14px;
   }
 
-  /* ============ 가로 모드: 시작/초기화를 화면 좌우로 큰 원형 버튼 배치 ============ */
-  @media (orientation: landscape) {
-    .controls {
-      position: fixed;
-      left: 0;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 100%;
-      justify-content: space-between;
-      padding: 0 clamp(16px, 4vw, 48px);
-      padding-left: max(clamp(16px, 4vw, 48px), env(safe-area-inset-left));
-      padding-right: max(clamp(16px, 4vw, 48px), env(safe-area-inset-right));
-      gap: 0;
-      margin: 0;
-      z-index: 10;
-      pointer-events: none; /* 가운데 빈 공간은 클릭 통과 */
-    }
-    .controls .btn {
-      aspect-ratio: 1;             /* 정사각(원형) — 가로세로 1:1 */
-      width: clamp(112px, 26vh, 190px);
-      min-width: 0;
-      padding: 0;
-      border-radius: 50%;
-      letter-spacing: 2px;
-      font-size: clamp(15px, 2.8vh, 22px);
-      pointer-events: auto;
-    }
+  .weight-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 4px;
+    height: 90px;
+    padding: 4px 2px 0;
+    border-top: 1px solid var(--line);
   }
+  .weight-bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 0;
+  }
+  .weight-bar .bar {
+    width: 100%;
+    background: var(--fg);
+    border-radius: 3px 3px 0 0;
+    min-height: 2px;
+  }
+  .weight-bar .day-label {
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+  .weight-bar .wt-label {
+    font-size: 10px;
+    font-family: 'Anton', sans-serif;
+    color: var(--fg);
+  }
+
+  .rm-calc {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .rm-calc input {
+    padding: 12px 10px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 8px;
+    text-align: center;
+    font-family: 'Anton', sans-serif;
+    font-size: 18px;
+  }
+  .rm-calc .rm-out {
+    padding: 10px 14px;
+    background: var(--fg);
+    color: var(--bg);
+    border-radius: 8px;
+    font-family: 'Anton', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    min-width: 76px;
+    text-align: center;
+  }
+  .rm-calc .rm-out span { font-size: 11px; opacity: 0.7; }
+
+  .big3-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .big3-row {
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    gap: 10px;
+    align-items: center;
+  }
+  .big3-row .name {
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--muted);
+  }
+  .big3-row input {
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 8px;
+    text-align: center;
+    font-family: 'Anton', sans-serif;
+    font-size: 18px;
+  }
+  .big3-row .unit { color: var(--muted); font-size: 12px; }
+
+  .big3-total {
+    margin-top: 12px;
+    padding: 14px;
+    background: var(--fg);
+    color: var(--bg);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .big3-total .label { font-size: 13px; letter-spacing: 3px; font-weight: 500; }
+  .big3-total .value {
+    font-family: 'Anton', sans-serif;
+    font-size: 30px;
+    line-height: 1;
+    letter-spacing: 1px;
+  }
+  .big3-total .value small { font-size: 12px; opacity: 0.6; margin-left: 4px; }
+
+  /* ============ 스크롤 개선 ============ */
+  ::-webkit-scrollbar { width: 0; }
 </style>
 </head>
 <body>
@@ -334,186 +591,478 @@
     <span class="app-title">쇠질모드</span>
   </header>
 
-  <div class="section section-clock">
-    <div class="label">Now</div>
-    <div class="clock-time" id="clockTime">
-      <span class="digits">00:00:00</span>
-    </div>
-  </div>
+  <main class="content">
+    <!-- ============ TAB 1: 쇠일정 ============ -->
+    <section class="tab-panel" data-tab="schedule">
+      <div class="cal-header">
+        <div class="cal-title" id="calTitle">2026 · 09</div>
+        <div class="cal-nav">
+          <button id="calPrev" aria-label="이전 달">‹</button>
+          <button id="calToday" aria-label="오늘">•</button>
+          <button id="calNext" aria-label="다음 달">›</button>
+        </div>
+      </div>
+      <div class="cal-weekdays">
+        <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
 
-  <div class="section section-sw">
-    <div class="label"><span class="live-dot" id="liveDot"></span>Stopwatch</div>
-    <div class="sw-panel">
-      <div class="sw-time" id="swTime">
-        <span class="digits">00:00:00</span>
+      <div class="schedule-panel">
+        <div class="schedule-date" id="scheduleDate">날짜를 선택하세요</div>
+        <div class="schedule-list" id="scheduleList"></div>
+        <div class="schedule-form">
+          <input type="text" id="scheduleInput" placeholder="일정 (예: 18:00 스쿼트)">
+          <button id="scheduleAdd">추가</button>
+        </div>
       </div>
-      <div class="controls">
-        <button class="btn btn-primary" id="btnToggle">시작</button>
-        <button class="btn btn-secondary" id="btnReset">초기화</button>
+    </section>
+
+    <!-- ============ TAB 2: 쇠기록 ============ -->
+    <section class="tab-panel" data-tab="workout" hidden>
+      <div class="today-hero">
+        <div class="today-date" id="todayDate">MM.DD (요일)</div>
+        <div class="today-time" id="todayTime">00:00:00</div>
       </div>
-    </div>
-  </div>
+
+      <div class="stopwatch-card">
+        <div class="sw-display" id="swDisplay">00:00:00</div>
+        <div class="sw-controls">
+          <button class="primary" id="swToggle">시작</button>
+          <button id="swReset">리셋</button>
+        </div>
+      </div>
+
+      <div class="section-title">오늘의 운동</div>
+      <div class="exercise-list" id="exerciseList"></div>
+      <div class="add-exercise-form">
+        <input type="text" id="exerciseInput" placeholder="운동명 (예: 벤치프레스)">
+        <button id="exerciseAdd">추가</button>
+      </div>
+    </section>
+
+    <!-- ============ TAB 3: 쇠스탯 ============ -->
+    <section class="tab-panel" data-tab="stats" hidden>
+      <div class="section-title">몸무게</div>
+      <div class="stat-card">
+        <div class="weight-input-row">
+          <input type="number" step="0.1" id="weightInput" placeholder="오늘 몸무게">
+          <span class="unit">kg</span>
+          <button id="weightSave">기록</button>
+        </div>
+        <div class="weight-chart" id="weightChart"></div>
+      </div>
+
+      <div class="section-title">1RM 계산기</div>
+      <div class="stat-card">
+        <div class="stat-title">EPLEY 공식 · 무게 × (1 + 반복/30)</div>
+        <div class="rm-calc">
+          <input type="number" id="rmWeight" placeholder="무게">
+          <input type="number" id="rmReps" placeholder="반복">
+          <div class="rm-out" id="rmOut">— <span>kg</span></div>
+        </div>
+      </div>
+
+      <div class="section-title">3대 500 도전</div>
+      <div class="stat-card">
+        <div class="big3-list">
+          <div class="big3-row">
+            <span class="name">벤치</span>
+            <input type="number" data-lift="bench" placeholder="1RM">
+            <span class="unit">kg</span>
+          </div>
+          <div class="big3-row">
+            <span class="name">스쿼트</span>
+            <input type="number" data-lift="squat" placeholder="1RM">
+            <span class="unit">kg</span>
+          </div>
+          <div class="big3-row">
+            <span class="name">데드</span>
+            <input type="number" data-lift="deadlift" placeholder="1RM">
+            <span class="unit">kg</span>
+          </div>
+        </div>
+        <div class="big3-total">
+          <span class="label">TOTAL</span>
+          <span class="value"><span id="big3Total">0</span><small>kg</small></span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="gnb">
+    <button class="gnb-btn active" data-target="schedule">
+      <span class="gnb-icon">CAL</span><span>쇠일정</span>
+    </button>
+    <button class="gnb-btn" data-target="workout">
+      <span class="gnb-icon">LOG</span><span>쇠기록</span>
+    </button>
+    <button class="gnb-btn" data-target="stats">
+      <span class="gnb-icon">1RM</span><span>쇠스탯</span>
+    </button>
+  </nav>
 
 <script>
+  // ============ 공통 유틸 ============
+  const pad2 = (n) => String(n).padStart(2, '0');
+  const dateKey = (d) => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+  const todayKey = () => dateKey(new Date());
+  const store = {
+    get(k, def) {
+      try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch { return def; }
+    },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+  };
+
   // ============ 확대/축소 제스처 차단 ============
-  ['gesturestart', 'gesturechange', 'gestureend'].forEach(evt => {
-    document.addEventListener(evt, (e) => e.preventDefault(), { passive: false });
+  ['gesturestart','gesturechange','gestureend'].forEach(evt => {
+    document.addEventListener(evt, e => e.preventDefault(), { passive: false });
   });
-  document.addEventListener('touchmove', (e) => {
-    if (e.touches && e.touches.length > 1) e.preventDefault();
-  }, { passive: false });
   let lastTouchEnd = 0;
-  document.addEventListener('touchend', (e) => {
+  document.addEventListener('touchend', e => {
     const now = Date.now();
     if (now - lastTouchEnd < 320) e.preventDefault();
     lastTouchEnd = now;
   }, { passive: false });
 
-  // 각 문자를 fixed-width span으로 감싸서 폭 흔들림 제거
-  function digitSpans(str) {
-    let out = '';
-    for (const c of str) {
-      if (c === ':') out += `<span class="colon">${c}</span>`;
-      else out += `<span class="digit">${c}</span>`;
+  // ============ GNB / 탭 전환 ============
+  const gnbBtns = document.querySelectorAll('.gnb-btn');
+  const panels = document.querySelectorAll('.tab-panel');
+  function switchTab(target) {
+    panels.forEach(p => { p.hidden = (p.dataset.tab !== target); });
+    gnbBtns.forEach(b => b.classList.toggle('active', b.dataset.target === target));
+  }
+  gnbBtns.forEach(b => b.addEventListener('click', () => switchTab(b.dataset.target)));
+
+  // ============ 1. 캘린더 (쇠일정) ============
+  const KEY_SCHEDULE = 'sw_schedule_v1';
+  let scheduleData = store.get(KEY_SCHEDULE, {}); // { 'YYYY-MM-DD': ['일정1','일정2'] }
+  let calCursor = new Date();  calCursor.setDate(1);
+  let selectedKey = todayKey();
+
+  const calGrid = document.getElementById('calGrid');
+  const calTitle = document.getElementById('calTitle');
+  const scheduleDateEl = document.getElementById('scheduleDate');
+  const scheduleListEl = document.getElementById('scheduleList');
+  const scheduleInput = document.getElementById('scheduleInput');
+
+  function renderCalendar() {
+    const y = calCursor.getFullYear(), m = calCursor.getMonth();
+    calTitle.textContent = `${y} · ${pad2(m+1)}`;
+    calGrid.innerHTML = '';
+    const first = new Date(y, m, 1);
+    const startDay = first.getDay(); // 0=일
+    const daysInMonth = new Date(y, m+1, 0).getDate();
+    const daysInPrev = new Date(y, m, 0).getDate();
+    const todayK = todayKey();
+
+    // 이전 달 여백 채우기
+    for (let i = startDay - 1; i >= 0; i--) {
+      const d = daysInPrev - i;
+      calGrid.appendChild(makeCell(d, `${y}-${pad2(m)}-${pad2(d)}`, true, todayK));
     }
-    return out;
+    // 현재 달
+    for (let d = 1; d <= daysInMonth; d++) {
+      const k = `${y}-${pad2(m+1)}-${pad2(d)}`;
+      calGrid.appendChild(makeCell(d, k, false, todayK));
+    }
+    // 다음 달 여백 채우기 (총 42칸)
+    const filled = startDay + daysInMonth;
+    const rest = (7 - (filled % 7)) % 7;
+    for (let d = 1; d <= rest; d++) {
+      const k = `${y}-${pad2(m+2)}-${pad2(d)}`;
+      calGrid.appendChild(makeCell(d, k, true, todayK));
+    }
+    renderSchedulePanel();
   }
 
-  // 컨텐츠가 부모 폭보다 넓으면 font-size를 실제로 줄여서 레이아웃 폭 = 시각 폭 유지
-  // (transform:scale은 레이아웃 폭이 원본이라 아래 버튼과 정렬 어긋남)
-  // 가로 모드에서 scaleX(1.05)가 걸려있으면 그만큼 여유공간을 미리 빼서 시각적 잘림 방지
-  function scaleFit(el) {
-    el.style.fontSize = '';
-    const parent = el.parentElement;
-    const isLandscape = window.matchMedia('(orientation: landscape)').matches;
-    const stretchX = isLandscape ? 1.05 : 1.0;
-    const avail = (parent.clientWidth * 0.98) / stretchX;
-    const natural = el.scrollWidth;
-    if (natural > avail && natural > 0) {
-      const cur = parseFloat(getComputedStyle(el).fontSize);
-      el.style.fontSize = (cur * (avail / natural)) + 'px';
-    }
+  function makeCell(day, key, otherMonth, todayK) {
+    const el = document.createElement('div');
+    el.className = 'cal-cell';
+    if (otherMonth) el.classList.add('other-month');
+    if (key === todayK) el.classList.add('today');
+    if (key === selectedKey) el.classList.add('selected');
+    if (scheduleData[key] && scheduleData[key].length) el.classList.add('has-items');
+    el.textContent = day;
+    el.addEventListener('click', () => {
+      selectedKey = key;
+      // 다른 달 클릭 시 커서 이동
+      if (otherMonth) {
+        const [yy, mm] = key.split('-').map(Number);
+        calCursor = new Date(yy, mm - 1, 1);
+      }
+      renderCalendar();
+    });
+    return el;
   }
 
-  const pad2 = (n) => String(n).padStart(2, '0');
+  function renderSchedulePanel() {
+    const items = scheduleData[selectedKey] || [];
+    scheduleDateEl.textContent = formatSelectedDate(selectedKey);
+    scheduleListEl.innerHTML = '';
+    if (items.length === 0) {
+      const p = document.createElement('div');
+      p.className = 'schedule-empty';
+      p.textContent = '일정 없음';
+      scheduleListEl.appendChild(p);
+    } else {
+      items.forEach((text, idx) => {
+        const row = document.createElement('div');
+        row.className = 'schedule-item';
+        const t = document.createElement('div'); t.className = 'text'; t.textContent = text;
+        const b = document.createElement('button'); b.className = 'del'; b.textContent = '×';
+        b.addEventListener('click', () => {
+          scheduleData[selectedKey].splice(idx, 1);
+          if (scheduleData[selectedKey].length === 0) delete scheduleData[selectedKey];
+          store.set(KEY_SCHEDULE, scheduleData);
+          renderCalendar();
+        });
+        row.appendChild(t); row.appendChild(b);
+        scheduleListEl.appendChild(row);
+      });
+    }
+  }
+  function formatSelectedDate(k) {
+    const [y,m,d] = k.split('-').map(Number);
+    const dt = new Date(y, m-1, d);
+    const dow = ['일','월','화','수','목','금','토'][dt.getDay()];
+    return `${m}월 ${d}일 (${dow})`;
+  }
 
-  // ============ 현재 시각 (24시간, HH:MM:SS) ============
-  const clockEl = document.getElementById('clockTime');
-  const clockDigits = clockEl.querySelector('.digits');
-  let lastClock = '';
-  function updateClock() {
+  document.getElementById('calPrev').addEventListener('click', () => { calCursor.setMonth(calCursor.getMonth()-1); renderCalendar(); });
+  document.getElementById('calNext').addEventListener('click', () => { calCursor.setMonth(calCursor.getMonth()+1); renderCalendar(); });
+  document.getElementById('calToday').addEventListener('click', () => { calCursor = new Date(); calCursor.setDate(1); selectedKey = todayKey(); renderCalendar(); });
+
+  document.getElementById('scheduleAdd').addEventListener('click', () => addSchedule());
+  scheduleInput.addEventListener('keydown', e => { if (e.key === 'Enter') addSchedule(); });
+  function addSchedule() {
+    const v = scheduleInput.value.trim();
+    if (!v) return;
+    if (!scheduleData[selectedKey]) scheduleData[selectedKey] = [];
+    scheduleData[selectedKey].push(v);
+    store.set(KEY_SCHEDULE, scheduleData);
+    scheduleInput.value = '';
+    renderCalendar();
+  }
+
+  // ============ 2. 쇠기록 (오늘 날짜/시간/스톱워치/운동) ============
+  const KEY_WORKOUT = 'sw_workout_v1';
+  let workoutData = store.get(KEY_WORKOUT, {});
+  const todayDateEl = document.getElementById('todayDate');
+  const todayTimeEl = document.getElementById('todayTime');
+  const exListEl = document.getElementById('exerciseList');
+  const exInput = document.getElementById('exerciseInput');
+
+  function renderTodayHero() {
     const d = new Date();
-    const str = `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
-    if (str === lastClock) return;
-    lastClock = str;
-    clockDigits.innerHTML = digitSpans(str);
-    scaleFit(clockEl);
+    const dow = ['일','월','화','수','목','금','토'][d.getDay()];
+    todayDateEl.textContent = `${pad2(d.getMonth()+1)}.${pad2(d.getDate())} (${dow})`;
+    todayTimeEl.textContent = `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
   }
-  updateClock();
-  setInterval(updateClock, 500);
+  setInterval(renderTodayHero, 1000);
+  renderTodayHero();
 
-  // ============ 스톱워치 (HH:MM:SS) ============
-  const swEl = document.getElementById('swTime');
-  const swDigits = swEl.querySelector('.digits');
-  const btnToggle = document.getElementById('btnToggle');
-  const btnReset = document.getElementById('btnReset');
-  const liveDot = document.getElementById('liveDot');
+  function renderExercises() {
+    const list = workoutData[todayKey()] || [];
+    exListEl.innerHTML = '';
+    list.forEach((ex, idx) => {
+      const card = document.createElement('div');
+      card.className = 'exercise-card';
+      const head = document.createElement('div'); head.className = 'exercise-head';
+      const nm = document.createElement('div'); nm.className = 'exercise-name'; nm.textContent = ex.name;
+      const del = document.createElement('button'); del.className = 'del'; del.textContent = '×';
+      del.addEventListener('click', () => {
+        workoutData[todayKey()].splice(idx, 1);
+        if (workoutData[todayKey()].length === 0) delete workoutData[todayKey()];
+        store.set(KEY_WORKOUT, workoutData);
+        renderExercises();
+      });
+      head.appendChild(nm); head.appendChild(del); card.appendChild(head);
 
-  let running = false;
-  let startedAt = 0;   // 마지막 시작 시점(ms since epoch)
-  let elapsed = 0;     // 이전까지 누적된 시간(ms)
-  let rafId = null;
-  let lastSw = '';
+      const chips = document.createElement('div'); chips.className = 'set-list';
+      (ex.sets || []).forEach((s, si) => {
+        const c = document.createElement('span'); c.className = 'set-chip';
+        c.innerHTML = `${s.weight}<span class="rm">×</span>${s.reps}`;
+        const rm = document.createElement('button'); rm.className = 'rm'; rm.textContent = '×';
+        rm.addEventListener('click', () => {
+          ex.sets.splice(si, 1);
+          store.set(KEY_WORKOUT, workoutData);
+          renderExercises();
+        });
+        c.appendChild(rm);
+        chips.appendChild(c);
+      });
+      card.appendChild(chips);
 
-  function renderSw() {
-    const now = running ? (Date.now() - startedAt + elapsed) : elapsed;
-    const totalSec = Math.max(0, Math.floor(now / 1000));
-    const h = Math.floor(totalSec / 3600);
-    const m = Math.floor(totalSec / 60) % 60;
-    const s = totalSec % 60;
-    const str = `${pad2(h)}:${pad2(m)}:${pad2(s)}`;
-    if (str === lastSw) return;
-    lastSw = str;
-    swDigits.innerHTML = digitSpans(str);
-    scaleFit(swEl);
-  }
+      const inputRow = document.createElement('div'); inputRow.className = 'set-input-row';
+      const wIn = Object.assign(document.createElement('input'), { type: 'number', placeholder: '무게(kg)', step: '0.5' });
+      const rIn = Object.assign(document.createElement('input'), { type: 'number', placeholder: '반복', step: '1' });
+      const add = document.createElement('button'); add.className = 'add-set'; add.textContent = '세트 +';
+      add.addEventListener('click', () => {
+        const w = parseFloat(wIn.value), r = parseInt(rIn.value);
+        if (isNaN(w) || isNaN(r) || w <= 0 || r <= 0) return;
+        if (!ex.sets) ex.sets = [];
+        ex.sets.push({ weight: w, reps: r });
+        store.set(KEY_WORKOUT, workoutData);
+        wIn.value = ''; rIn.value = '';
+        renderExercises();
+      });
+      inputRow.appendChild(wIn); inputRow.appendChild(rIn); inputRow.appendChild(add);
+      card.appendChild(inputRow);
 
-  function tick() {
-    renderSw();
-    rafId = requestAnimationFrame(tick);
-  }
-
-  function start() {
-    if (running) return;
-    running = true;
-    startedAt = Date.now();
-    btnToggle.textContent = '정지';
-    btnToggle.classList.add('running');
-    swEl.classList.add('running');
-    liveDot.classList.add('on');
-    btnReset.disabled = true;  // 실행 중에는 초기화 잠금 (실수 방지)
-    tick();
-  }
-
-  function stop() {
-    if (!running) return;
-    running = false;
-    elapsed += Date.now() - startedAt;
-    if (rafId) cancelAnimationFrame(rafId);
-    rafId = null;
-    btnToggle.textContent = '시작';
-    btnToggle.classList.remove('running');
-    swEl.classList.remove('running');
-    liveDot.classList.remove('on');
-    btnReset.disabled = false;
-    renderSw();
+      exListEl.appendChild(card);
+    });
   }
 
-  function reset() {
-    if (running) return;
-    elapsed = 0;
-    startedAt = 0;
-    lastSw = '';
-    renderSw();
-  }
-
-  btnToggle.addEventListener('click', () => {
-    if (running) stop(); else start();
+  document.getElementById('exerciseAdd').addEventListener('click', () => {
+    const v = exInput.value.trim();
+    if (!v) return;
+    const k = todayKey();
+    if (!workoutData[k]) workoutData[k] = [];
+    workoutData[k].push({ name: v, sets: [] });
+    store.set(KEY_WORKOUT, workoutData);
+    exInput.value = '';
+    renderExercises();
   });
-  btnReset.addEventListener('click', reset);
+  exInput.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('exerciseAdd').click(); });
+  renderExercises();
 
-  // 스페이스바 = 토글, R = 초기화 (데스크톱 편의)
-  document.addEventListener('keydown', (e) => {
-    if (e.target.matches('input, textarea')) return;
-    if (e.code === 'Space') { e.preventDefault(); btnToggle.click(); }
-    else if (e.key === 'r' || e.key === 'R') { if (!running) reset(); }
+  // ============ 스톱워치 ============
+  const swDisplay = document.getElementById('swDisplay');
+  const swToggle = document.getElementById('swToggle');
+  const swReset = document.getElementById('swReset');
+  let swRunning = false, swStart = 0, swElapsed = 0, swRaf = null;
+  function swRender() {
+    const now = swRunning ? (Date.now() - swStart + swElapsed) : swElapsed;
+    const total = Math.max(0, Math.floor(now / 1000));
+    const h = Math.floor(total/3600), m = Math.floor(total/60)%60, s = total%60;
+    swDisplay.textContent = `${pad2(h)}:${pad2(m)}:${pad2(s)}`;
+  }
+  function swTick() { swRender(); swRaf = requestAnimationFrame(swTick); }
+  swToggle.addEventListener('click', () => {
+    if (swRunning) {
+      swRunning = false;
+      swElapsed += Date.now() - swStart;
+      if (swRaf) cancelAnimationFrame(swRaf);
+      swRaf = null;
+      swToggle.textContent = '시작';
+      swDisplay.classList.remove('running');
+    } else {
+      swRunning = true;
+      swStart = Date.now();
+      swToggle.textContent = '정지';
+      swDisplay.classList.add('running');
+      swTick();
+    }
+  });
+  swReset.addEventListener('click', () => {
+    if (swRunning) return;
+    swElapsed = 0; swStart = 0; swRender();
+  });
+  swRender();
+
+  // ============ 3. 쇠스탯 ============
+  const KEY_WT = 'sw_bodyweight_v1';
+  const KEY_1RM = 'sw_1rm_v1';
+  let wtData = store.get(KEY_WT, {}); // { 'YYYY-MM-DD': kg }
+  let big3Data = store.get(KEY_1RM, { bench: 0, squat: 0, deadlift: 0 });
+
+  const weightInput = document.getElementById('weightInput');
+  const weightChart = document.getElementById('weightChart');
+  document.getElementById('weightSave').addEventListener('click', () => {
+    const v = parseFloat(weightInput.value);
+    if (isNaN(v) || v <= 0) return;
+    wtData[todayKey()] = v;
+    store.set(KEY_WT, wtData);
+    weightInput.value = '';
+    renderWeightChart();
   });
 
-  renderSw();
+  function renderWeightChart() {
+    weightChart.innerHTML = '';
+    const days = 7;
+    const now = new Date();
+    const values = [];
+    const labels = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(now); d.setDate(now.getDate() - i);
+      const k = dateKey(d);
+      values.push(wtData[k] || null);
+      labels.push(pad2(d.getDate()));
+    }
+    const nums = values.filter(v => v != null);
+    const min = nums.length ? Math.min(...nums) : 0;
+    const max = nums.length ? Math.max(...nums) : 0;
+    const range = Math.max(1, max - min);
+    for (let i = 0; i < days; i++) {
+      const bar = document.createElement('div'); bar.className = 'weight-bar';
+      const b = document.createElement('div'); b.className = 'bar';
+      const v = values[i];
+      if (v == null) {
+        b.style.height = '2px'; b.style.opacity = '0.15';
+      } else {
+        const pct = nums.length > 1 ? ((v - min) / range) * 78 + 12 : 60;
+        b.style.height = pct + '%';
+      }
+      const wt = document.createElement('div'); wt.className = 'wt-label';
+      wt.textContent = v != null ? v.toFixed(1) : '';
+      const dl = document.createElement('div'); dl.className = 'day-label'; dl.textContent = labels[i];
+      bar.appendChild(wt); bar.appendChild(b); bar.appendChild(dl);
+      weightChart.appendChild(bar);
+    }
+  }
+  renderWeightChart();
 
-  // 방향 전환/리사이즈 시 스케일 재계산
-  window.addEventListener('resize', () => {
-    scaleFit(clockEl);
-    scaleFit(swEl);
-  });
-  window.addEventListener('orientationchange', () => {
-    setTimeout(() => { scaleFit(clockEl); scaleFit(swEl); }, 100);
-  });
+  // 1RM 계산기
+  const rmWeight = document.getElementById('rmWeight');
+  const rmReps = document.getElementById('rmReps');
+  const rmOut = document.getElementById('rmOut');
+  function calc1RM() {
+    const w = parseFloat(rmWeight.value), r = parseInt(rmReps.value);
+    if (isNaN(w) || isNaN(r) || w <= 0 || r <= 0) { rmOut.innerHTML = '— <span>kg</span>'; return; }
+    const rm = w * (1 + r/30);
+    rmOut.innerHTML = `${rm.toFixed(1)} <span>kg</span>`;
+  }
+  rmWeight.addEventListener('input', calc1RM);
+  rmReps.addEventListener('input', calc1RM);
 
-  // ============ Wake Lock: 앱 활성 중 화면 꺼짐 방지 ============
+  // 3대 총합
+  const big3Inputs = document.querySelectorAll('input[data-lift]');
+  const big3TotalEl = document.getElementById('big3Total');
+  function renderBig3() {
+    big3Inputs.forEach(inp => {
+      const v = big3Data[inp.dataset.lift];
+      inp.value = v > 0 ? v : '';
+    });
+    const total = (big3Data.bench||0) + (big3Data.squat||0) + (big3Data.deadlift||0);
+    big3TotalEl.textContent = total;
+  }
+  big3Inputs.forEach(inp => {
+    inp.addEventListener('input', () => {
+      const v = parseFloat(inp.value) || 0;
+      big3Data[inp.dataset.lift] = v;
+      store.set(KEY_1RM, big3Data);
+      const total = (big3Data.bench||0) + (big3Data.squat||0) + (big3Data.deadlift||0);
+      big3TotalEl.textContent = total;
+    });
+  });
+  renderBig3();
+
+  // ============ Wake Lock ============
   let wakeLock = null;
   async function acquireWakeLock() {
     if (!('wakeLock' in navigator)) return;
     try {
       wakeLock = await navigator.wakeLock.request('screen');
       wakeLock.addEventListener('release', () => { wakeLock = null; });
-    } catch (e) { /* 사용자 제스처 필요/지원 안 함 → 무시 */ }
+    } catch {}
   }
   acquireWakeLock();
-  // 백그라운드→포그라운드 복귀 시 재요청 (OS가 자동 해제하기 때문)
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && !wakeLock) acquireWakeLock();
   });
+
+  // ============ 초기 ============
+  renderCalendar();
 
   // ============ Service Worker ============
   if ('serviceWorker' in navigator) {

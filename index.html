@@ -278,34 +278,37 @@
     font-size: 14px;
   }
 
-  /* ============ 기록: 상단 히어로 (날짜/시간/스톱워치가 화면 절반) ============ */
+  /* ============ 기록: 상단 히어로 (날짜/시간/스톱워치가 화면 절반+) ============ */
   .workout-hero {
-    min-height: 50vh;
+    min-height: 58vh;
     padding: 18px 4px 24px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 18px;
+    gap: 14px;
     margin-bottom: 8px;
     border-bottom: 1px solid var(--line);
   }
+  /* 날짜/시간을 세로로 쌓아 각자 넓은 폭 확보 → 폰트 더 크게 가능 */
   .wh-meta {
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
   }
   .wh-date {
     font-family: 'Anton', sans-serif;
-    font-size: clamp(34px, 8vw, 52px);
+    font-size: clamp(48px, 12vw, 78px);
     line-height: 1;
     letter-spacing: 1px;
   }
   .wh-time {
     font-family: 'Anton', sans-serif;
-    font-size: clamp(34px, 8vw, 52px);  /* 날짜와 동일 크기로 */
+    font-size: clamp(48px, 12vw, 78px);
     color: var(--muted);
     font-variant-numeric: tabular-nums;
     line-height: 1;
+    letter-spacing: 1px;
   }
 
   .wh-sw {
@@ -313,39 +316,42 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 14px;
+    gap: 16px;
     flex: 1;
+    width: 100%;
   }
   .wh-sw-label {
     font-family: 'Bebas Neue', 'Impact', sans-serif;
-    font-size: 13px;
+    font-size: 14px;
     letter-spacing: 6px;
     color: var(--muted);
   }
   .wh-sw-display {
     font-family: 'Anton', sans-serif;
-    font-size: clamp(96px, 24vw, 180px);  /* 더 크게 */
+    font-size: clamp(130px, 34vw, 260px);  /* 크게 (JS scaleFit이 overflow 방지) */
     line-height: 0.9;
     font-variant-numeric: tabular-nums;
     letter-spacing: 2px;
     color: var(--fg);
+    white-space: nowrap;
+    text-align: center;
   }
   .wh-sw-display.running { color: var(--fg); }
   .wh-sw-controls {
     display: flex;
-    gap: 12px;
-    margin-top: 6px;
+    gap: 14px;
+    margin-top: 8px;
   }
   .wh-sw-controls button {
-    padding: 14px 28px;
+    padding: 16px 32px;
     border: 1.5px solid var(--fg);
     border-radius: 100px;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 16px;
+    font-size: 18px;
     letter-spacing: 3px;
     color: var(--fg);
     background: transparent;
-    min-width: 100px;
+    min-width: 116px;
   }
   .wh-sw-controls button.primary {
     background: var(--fg);
@@ -855,6 +861,10 @@
   function switchTab(target) {
     panels.forEach(p => { p.hidden = (p.dataset.tab !== target); });
     gnbBtns.forEach(b => b.classList.toggle('active', b.dataset.target === target));
+    // 기록 탭 진입 시 스톱워치 폰트 재적합 (탭 전환 직후 폭 측정)
+    if (target === 'workout') {
+      requestAnimationFrame(() => { if (typeof swRender === 'function') swRender(); });
+    }
   }
   gnbBtns.forEach(b => b.addEventListener('click', () => switchTab(b.dataset.target)));
 
@@ -1102,6 +1112,24 @@
   swReset.addEventListener('click', swResetFn);
   if (lmToggle) lmToggle.addEventListener('click', () => swRunning ? swStopFn() : swStartFn());
   if (lmReset) lmReset.addEventListener('click', swResetFn);
+
+  // 세로 스톱워치 큰 숫자가 화면 폭을 넘어서면 자동으로 폰트 축소 (overflow 방지)
+  function fitSwDisplay() {
+    if (!swDisplay || !swDisplay.offsetParent) return;
+    swDisplay.style.fontSize = '';
+    const parent = swDisplay.parentElement;
+    if (!parent) return;
+    const avail = parent.clientWidth * 0.98;
+    const natural = swDisplay.scrollWidth;
+    if (natural > avail && natural > 0) {
+      const cur = parseFloat(getComputedStyle(swDisplay).fontSize);
+      swDisplay.style.fontSize = (cur * (avail / natural)) + 'px';
+    }
+  }
+  const _origSwRender = swRender;
+  swRender = function() { _origSwRender(); fitSwDisplay(); };
+  window.addEventListener('resize', fitSwDisplay);
+  window.addEventListener('orientationchange', () => setTimeout(fitSwDisplay, 120));
   swRender();
 
   // ============ 3. 쇠스탯 ============

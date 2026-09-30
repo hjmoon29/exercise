@@ -150,7 +150,7 @@
   .btn {
     flex: 0 0 auto;
     min-width: clamp(130px, 34vw, 200px);
-    padding: clamp(14px, 3vmin, 22px) clamp(20px, 4vmin, 32px);
+    padding: clamp(18px, 4vmin, 28px) clamp(20px, 4vmin, 32px);
     font-family: 'Bebas Neue', 'Impact', sans-serif;
     font-size: clamp(15px, 3vmin, 22px);
     font-weight: 400;
@@ -291,7 +291,7 @@
   @media (orientation: landscape) {
     .section {
       /* 버튼 폭 + 바깥 gutter + 숫자↔버튼 사이 여백(20px) 만큼 좌우 안쪽으로 좁힘 */
-      max-width: calc(100% - (clamp(96px, 22vh, 160px) + clamp(16px, 4vw, 48px) + 20px) * 2);
+      max-width: calc(100% - (clamp(112px, 26vh, 190px) + clamp(16px, 4vw, 48px) + 20px) * 2);
       margin-left: auto;
       margin-right: auto;
     }
@@ -317,12 +317,12 @@
     }
     .controls .btn {
       aspect-ratio: 1;             /* 정사각(원형) — 가로세로 1:1 */
-      width: clamp(96px, 22vh, 160px);
+      width: clamp(112px, 26vh, 190px);
       min-width: 0;
       padding: 0;
       border-radius: 50%;
       letter-spacing: 2px;
-      font-size: clamp(14px, 2.6vh, 20px);
+      font-size: clamp(15px, 2.8vh, 22px);
       pointer-events: auto;
     }
   }

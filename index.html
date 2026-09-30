@@ -289,26 +289,41 @@
     margin-bottom: 8px;
     border-bottom: 1px solid var(--line);
   }
-  /* 날짜/시간을 한 줄에 강제, 시간이 더 크게 (fitRow가 폭 초과 시 자동 축소) */
+  /* 날짜(2줄 스택)와 시간(1줄)을 한 행에, 세로 중앙 정렬 */
   .wh-meta {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: 12px;
     padding: 0 4px;
     width: 100%;
     overflow: hidden;
   }
+  /* 날짜: MM.DD 위 + 요일 아래 스택. 우측 시간 폰트 높이와 시각적으로 매칭 */
   .wh-date {
-    font-family: 'Anton', sans-serif;
-    font-size: clamp(24px, 7vw, 44px);   /* 시간보다 작게 */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
     line-height: 1;
-    letter-spacing: 1px;
     white-space: nowrap;
     min-width: 0;
-    flex-shrink: 1;
+    flex-shrink: 0;
+  }
+  .wh-date-main {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(34px, 11.5vw, 70px);
+    line-height: 1;
+    letter-spacing: 1px;
+  }
+  .wh-date-sub {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(20px, 7vw, 40px);
+    line-height: 1;
+    letter-spacing: 2px;
+    color: var(--muted);
   }
   .wh-time {
     font-family: 'Anton', sans-serif;
@@ -321,13 +336,14 @@
     min-width: 0;
     flex-shrink: 1;
   }
-  /* 자릿수 폭 고정: 1/8 등 어떤 숫자든 동일 폭 (Anton은 tabular-nums 미지원) */
+  /* 자릿수 폭 고정: 1/8 등 어떤 숫자든 동일 슬롯 (Anton은 tabular-nums 미지원) */
   .wh-time .digit,
   .wh-sw-display .digit,
   .lm-time .digit {
     display: inline-block;
     width: 0.58em;
     text-align: center;
+    overflow: hidden;      /* 슬롯보다 큰 글자가 있어도 scrollWidth 계산 안정화 */
   }
   .wh-time .colon,
   .wh-sw-display .colon,
@@ -335,6 +351,7 @@
     display: inline-block;
     width: 0.24em;
     text-align: center;
+    overflow: hidden;
   }
 
   .wh-sw {
@@ -764,7 +781,10 @@
     <section class="tab-panel" data-tab="workout" hidden>
       <div class="workout-hero">
         <div class="wh-meta">
-          <div class="wh-date" id="todayDate">MM.DD (요일)</div>
+          <div class="wh-date" id="todayDate">
+            <span class="wh-date-main">MM.DD</span>
+            <span class="wh-date-sub">요일</span>
+          </div>
           <div class="wh-time" id="todayTime">00:00:00</div>
         </div>
         <div class="wh-sw">
@@ -1029,10 +1049,15 @@
   const exInput = document.getElementById('exerciseInput');
 
   const lmClockEl = document.getElementById('lmClock');
+  const dowFull = ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'];
   function renderTodayHero() {
     const d = new Date();
-    const dow = ['일','월','화','수','목','금','토'][d.getDay()];
-    todayDateEl.textContent = `${pad2(d.getMonth()+1)}.${pad2(d.getDate())} (${dow})`;
+    const dayName = dowFull[d.getDay()];
+    // 날짜 = 2줄 스택 (MM.DD / 요일). 이미 존재하는 자식 요소 텍스트만 갱신
+    const mainEl = todayDateEl.querySelector('.wh-date-main');
+    const subEl = todayDateEl.querySelector('.wh-date-sub');
+    if (mainEl) mainEl.textContent = `${pad2(d.getMonth()+1)}.${pad2(d.getDate())}`;
+    if (subEl) subEl.textContent = dayName;
     const t = `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
     todayTimeEl.innerHTML = digitSpans(t);
     if (lmClockEl) lmClockEl.innerHTML = digitSpans(t);
@@ -1154,7 +1179,19 @@
   if (lmToggle) lmToggle.addEventListener('click', () => swRunning ? swStopFn() : swStartFn());
   if (lmReset) lmReset.addEventListener('click', swResetFn);
 
-  // 세로 히어로 텍스트가 폭을 넘어서면 자동으로 폰트 축소 (overflow 방지)
+  // HH:MM:SS의 예상 폭 = 6개 digit(0.58em) + 2개 colon(0.24em) = 3.96em
+  // scrollWidth 대신 이 상수를 쓰면 자릿수 값에 따라 폭이 흔들리지 않음
+  const DIGIT_TIME_EM = 3.96;
+  function fitDigitDisplay(el, availWidth) {
+    if (!el || !el.offsetParent) return;
+    el.style.fontSize = '';
+    const cur = parseFloat(getComputedStyle(el).fontSize);
+    const targetWidth = cur * DIGIT_TIME_EM;
+    if (targetWidth > availWidth && availWidth > 0) {
+      el.style.fontSize = (cur * (availWidth / targetWidth)) + 'px';
+    }
+  }
+  // 일반 텍스트용 (날짜 등) — 여전히 scrollWidth 기반
   function fitToWidth(el, ratio = 0.98) {
     if (!el || !el.offsetParent) return;
     el.style.fontSize = '';
@@ -1167,27 +1204,25 @@
       el.style.fontSize = (cur * (avail / natural)) + 'px';
     }
   }
-  // 날짜는 그대로 두고 현재 시간만 남은 폭에 맞춰 축소 (사용자 요청: 날짜 유지, 시간 강조)
   const whMetaEl = document.querySelector('.wh-meta');
   function fitTime() {
     if (!todayTimeEl || !todayTimeEl.offsetParent) return;
-    todayTimeEl.style.fontSize = '';  // 스타일 초기화 후 자연 폭 측정
-    const parent = whMetaEl;
-    if (!parent) return;
     const gap = 12;
-    const avail = parent.clientWidth * 0.98 - todayDateEl.scrollWidth - gap;
-    const natural = todayTimeEl.scrollWidth;
-    if (natural > avail && avail > 0 && natural > 0) {
-      const cur = parseFloat(getComputedStyle(todayTimeEl).fontSize);
-      todayTimeEl.style.fontSize = (cur * (avail / natural)) + 'px';
-    }
+    const avail = whMetaEl.clientWidth * 0.98 - todayDateEl.scrollWidth - gap;
+    fitDigitDisplay(todayTimeEl, avail);
+  }
+  function fitSwDisplayCentered() {
+    if (!swDisplay || !swDisplay.offsetParent) return;
+    const parent = swDisplay.parentElement;
+    if (!parent) return;
+    fitDigitDisplay(swDisplay, parent.clientWidth * 0.98);
   }
   function fitHero() {
     fitTime();
-    fitToWidth(swDisplay);
+    fitSwDisplayCentered();
   }
   const _origSwRender = swRender;
-  swRender = function() { _origSwRender(); fitToWidth(swDisplay); };
+  swRender = function() { _origSwRender(); fitSwDisplayCentered(); };
   const _origRenderTodayHero = renderTodayHero;
   renderTodayHero = function() { _origRenderTodayHero(); fitTime(); };
   window.addEventListener('resize', fitHero);

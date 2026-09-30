@@ -298,17 +298,21 @@
   }
   .wh-date {
     font-family: 'Anton', sans-serif;
-    font-size: clamp(48px, 12vw, 78px);
+    font-size: clamp(72px, 20vw, 120px);
     line-height: 1;
     letter-spacing: 1px;
+    white-space: nowrap;
+    text-align: center;
   }
   .wh-time {
     font-family: 'Anton', sans-serif;
-    font-size: clamp(48px, 12vw, 78px);
+    font-size: clamp(72px, 20vw, 120px);
     color: var(--muted);
     font-variant-numeric: tabular-nums;
     line-height: 1;
     letter-spacing: 1px;
+    white-space: nowrap;
+    text-align: center;
   }
 
   .wh-sw {
@@ -861,9 +865,12 @@
   function switchTab(target) {
     panels.forEach(p => { p.hidden = (p.dataset.tab !== target); });
     gnbBtns.forEach(b => b.classList.toggle('active', b.dataset.target === target));
-    // 기록 탭 진입 시 스톱워치 폰트 재적합 (탭 전환 직후 폭 측정)
+    // 기록 탭 진입 시 히어로(날짜/시간/스톱워치) 폰트 재적합
     if (target === 'workout') {
-      requestAnimationFrame(() => { if (typeof swRender === 'function') swRender(); });
+      requestAnimationFrame(() => {
+        if (typeof swRender === 'function') swRender();
+        if (typeof renderTodayHero === 'function') renderTodayHero();
+      });
     }
   }
   gnbBtns.forEach(b => b.addEventListener('click', () => switchTab(b.dataset.target)));
@@ -1113,23 +1120,30 @@
   if (lmToggle) lmToggle.addEventListener('click', () => swRunning ? swStopFn() : swStartFn());
   if (lmReset) lmReset.addEventListener('click', swResetFn);
 
-  // 세로 스톱워치 큰 숫자가 화면 폭을 넘어서면 자동으로 폰트 축소 (overflow 방지)
-  function fitSwDisplay() {
-    if (!swDisplay || !swDisplay.offsetParent) return;
-    swDisplay.style.fontSize = '';
-    const parent = swDisplay.parentElement;
+  // 세로 히어로 텍스트가 폭을 넘어서면 자동으로 폰트 축소 (overflow 방지)
+  function fitToWidth(el, ratio = 0.98) {
+    if (!el || !el.offsetParent) return;
+    el.style.fontSize = '';
+    const parent = el.parentElement;
     if (!parent) return;
-    const avail = parent.clientWidth * 0.98;
-    const natural = swDisplay.scrollWidth;
+    const avail = parent.clientWidth * ratio;
+    const natural = el.scrollWidth;
     if (natural > avail && natural > 0) {
-      const cur = parseFloat(getComputedStyle(swDisplay).fontSize);
-      swDisplay.style.fontSize = (cur * (avail / natural)) + 'px';
+      const cur = parseFloat(getComputedStyle(el).fontSize);
+      el.style.fontSize = (cur * (avail / natural)) + 'px';
     }
   }
+  function fitHero() {
+    fitToWidth(todayDateEl);
+    fitToWidth(todayTimeEl);
+    fitToWidth(swDisplay);
+  }
   const _origSwRender = swRender;
-  swRender = function() { _origSwRender(); fitSwDisplay(); };
-  window.addEventListener('resize', fitSwDisplay);
-  window.addEventListener('orientationchange', () => setTimeout(fitSwDisplay, 120));
+  swRender = function() { _origSwRender(); fitToWidth(swDisplay); };
+  const _origRenderTodayHero = renderTodayHero;
+  renderTodayHero = function() { _origRenderTodayHero(); fitToWidth(todayDateEl); fitToWidth(todayTimeEl); };
+  window.addEventListener('resize', fitHero);
+  window.addEventListener('orientationchange', () => setTimeout(fitHero, 120));
   swRender();
 
   // ============ 3. 쇠스탯 ============

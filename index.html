@@ -193,9 +193,9 @@
     object-fit: contain;
     display: block;
     /* 원본: 흰 배경 + 회색 팔뚝
-       → grayscale로 순수 그레이스케일 확정, contrast 20으로 회색을 극한값(0/255)까지 밀어붙인 뒤 invert
-       → 결과: 검은 배경 + 순백 팔뚝 */
-    filter: grayscale(1) contrast(20) invert(1);
+       → invert(1)로 배경을 검게, brightness(2)로 회색 팔을 흰색까지 밝힘
+       → contrast로 극한값 밀지 않아서 원본 안티에일리어싱(굵기감) 유지 */
+    filter: invert(1) brightness(2);
   }
   .app-title {
     /* Noto Sans KR Light(300)로 가장 얇게. Windows Malgun Gothic은 300 미지원이라 fallback */

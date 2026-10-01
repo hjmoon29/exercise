@@ -712,6 +712,8 @@
   }
   /* 가로 모드 현재 시각(Now)은 세로 wh-time과 동일한 muted 회색 처리 */
   #lmClock { color: var(--muted); }
+  /* 가로 모드 스톱워치 러닝 시 세로 모드와 동일하게 블루 액센트 */
+  #lmSw.running { color: var(--accent); }
   .lm-round-btn {
     position: fixed;
     top: 50%;
@@ -1171,6 +1173,7 @@
     swToggle.textContent = '정지';
     swDisplay.classList.add('running');
     if (lmToggle) { lmToggle.textContent = '정지'; lmToggle.classList.add('running'); }
+    if (lmSw) lmSw.classList.add('running');
     if (lmLiveDot) lmLiveDot.classList.add('on');
     swTick();
   }
@@ -1183,6 +1186,7 @@
     swToggle.textContent = '시작';
     swDisplay.classList.remove('running');
     if (lmToggle) { lmToggle.textContent = '시작'; lmToggle.classList.remove('running'); }
+    if (lmSw) lmSw.classList.remove('running');
     if (lmLiveDot) lmLiveDot.classList.remove('on');
     swRender();
   }

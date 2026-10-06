@@ -22,9 +22,28 @@
     --line: rgba(170, 200, 240, 0.14);
     --line-strong: rgba(170, 200, 240, 0.32);
     --panel: rgba(130, 170, 230, 0.05);
-    --accent: #7fb0ff;                          /* 스틸 블루 액센트 */
+    --accent: #7fb0ff;                          /* 스틸 블루 액센트 (스톱워치/running) */
     --accent-dim: rgba(127, 176, 255, 0.22);
-    --danger: #ff4b3a;
+    --danger: #ef4444;                          /* 레드 */
+    /* 탭별 테마 컬러 */
+    --c-schedule: #4ade80;                      /* 에메랄드 그린 (일정) */
+    --c-schedule-dim: rgba(74, 222, 128, 0.22);
+    --c-schedule-glow: rgba(74, 222, 128, 0.35);
+    --c-workout: #fb923c;                       /* 바이브런트 오렌지 (기록) */
+    --c-workout-dim: rgba(251, 146, 60, 0.22);
+    --c-workout-glow: rgba(251, 146, 60, 0.35);
+    --c-stats: #c084fc;                         /* 퍼플 (스탯) */
+    --c-stats-dim: rgba(192, 132, 252, 0.22);
+    --c-stats-glow: rgba(192, 132, 252, 0.35);
+    --c-stats-alt: #f0abfc;                     /* 퍼플 그라데이션 보조 */
+    --c-info: #7fb0ff;                          /* 블루 (정보/running) */
+    --c-plan: #facc15;                          /* 앰버 (루틴) */
+    --c-plan-dim: rgba(250, 204, 21, 0.22);
+    --c-plan-glow: rgba(250, 204, 21, 0.35);
+    --c-timer: #22d3ee;                         /* 사이안 (타이머) */
+    --c-timer-dim: rgba(34, 211, 238, 0.22);
+    --c-timer-glow: rgba(34, 211, 238, 0.35);
+    --c-timer-alert: #ef4444;                   /* 타이머 종료 알림 */
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -104,8 +123,27 @@
     color: var(--muted);
     text-transform: uppercase;
     margin: 12px 2px 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
   }
   .section-title:first-child { margin-top: 2px; }
+  .section-title::before {
+    content: '';
+    width: 3px;
+    height: 11px;
+    background: var(--fg);
+    border-radius: 2px;
+  }
+  /* 탭별 섹션 타이틀 bar 색상 */
+  [data-tab="workout"] .section-title::before { background: var(--c-workout); box-shadow: 0 0 8px var(--c-workout-glow); }
+  [data-tab="workout"] .section-title { color: var(--c-workout); opacity: 0.85; }
+  [data-tab="stats"] .section-title::before { background: var(--c-stats); box-shadow: 0 0 8px var(--c-stats-glow); }
+  [data-tab="stats"] .section-title { color: var(--c-stats); opacity: 0.85; }
+  [data-tab="plan"] .section-title::before { background: var(--c-plan); box-shadow: 0 0 8px var(--c-plan-glow); }
+  [data-tab="plan"] .section-title { color: var(--c-plan); opacity: 0.85; }
+  [data-tab="timer"] .section-title::before { background: var(--c-timer); box-shadow: 0 0 8px var(--c-timer-glow); }
+  [data-tab="timer"] .section-title { color: var(--c-timer); opacity: 0.85; }
 
   /* ============ GNB ============ */
   .gnb {
@@ -131,7 +169,8 @@
     font-weight: 500;
     letter-spacing: 2px;
     color: var(--muted);
-    transition: color 0.15s ease;
+    transition: color 0.18s ease;
+    position: relative;
   }
   .gnb-btn .gnb-icon {
     font-family: 'Bebas Neue', sans-serif;
@@ -139,8 +178,31 @@
     line-height: 1;
     letter-spacing: 1px;
   }
-  .gnb-btn.active { color: var(--fg); }
-  .gnb-btn.active .gnb-icon { transform: translateY(-1px); transition: transform 0.15s ease; }
+  /* 테마 컬러별 활성 상태 */
+  .gnb-btn[data-target="schedule"].active { color: var(--c-schedule); }
+  .gnb-btn[data-target="plan"].active { color: var(--c-plan); }
+  .gnb-btn[data-target="workout"].active { color: var(--c-workout); }
+  .gnb-btn[data-target="timer"].active { color: var(--c-timer); }
+  .gnb-btn[data-target="stats"].active { color: var(--c-stats); }
+  .gnb-btn.active .gnb-icon {
+    transform: translateY(-1px);
+    transition: transform 0.18s ease;
+    text-shadow: 0 0 10px currentColor;
+  }
+  /* 상단 인디케이터 (활성 탭 위 글로우 바) */
+  .gnb-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 32px; height: 2px;
+    border-radius: 0 0 2px 2px;
+    background: currentColor;
+    opacity: 0;
+    transition: opacity 0.18s ease, width 0.18s ease;
+    box-shadow: 0 0 12px currentColor;
+  }
+  .gnb-btn.active::before { opacity: 1; width: 44px; }
 
   /* ============ 캘린더 (쇠일정) ============ */
   .cal-header {
@@ -154,6 +216,10 @@
     font-size: 30px;
     letter-spacing: 1px;
     line-height: 1;
+    background: linear-gradient(135deg, var(--fg) 0%, var(--c-schedule) 180%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
   .cal-nav {
     display: flex;
@@ -169,7 +235,13 @@
     justify-content: center;
     color: var(--fg);
     font-size: 18px;
+    transition: all 0.15s ease;
   }
+  .cal-nav button#calToday {
+    color: var(--c-schedule);
+    border-color: var(--c-schedule-dim);
+  }
+  .cal-nav button#calToday:active { background: var(--c-schedule-dim); }
   .cal-nav button:active { transform: scale(0.94); }
 
   .cal-weekdays {
@@ -206,17 +278,29 @@
     border: 1px solid transparent;
   }
   .cal-cell.other-month { color: rgba(255,255,255,0.18); }
-  .cal-cell.today { border-color: var(--accent); color: var(--accent); font-weight: 700; }
-  .cal-cell.selected { background: var(--fg); color: var(--bg); font-weight: 700; }
+  .cal-cell.today {
+    border-color: var(--c-schedule);
+    color: var(--c-schedule);
+    font-weight: 700;
+    box-shadow: inset 0 0 12px var(--c-schedule-dim);
+  }
+  .cal-cell.selected {
+    background: linear-gradient(135deg, var(--c-schedule) 0%, #22c55e 100%);
+    color: var(--bg);
+    font-weight: 700;
+    box-shadow: 0 4px 12px var(--c-schedule-glow);
+  }
+  .cal-cell.selected.today { border-color: transparent; }
   .cal-cell.has-items::after {
     content: '';
     position: absolute;
     bottom: 6px;
-    width: 4px; height: 4px;
+    width: 5px; height: 5px;
     border-radius: 50%;
-    background: currentColor;
-    opacity: 0.6;
+    background: var(--c-schedule);
+    box-shadow: 0 0 6px var(--c-schedule-glow);
   }
+  .cal-cell.selected.has-items::after { background: var(--bg); box-shadow: none; }
   .cal-cell:active { transform: scale(0.94); transition: transform 0.1s; }
 
   .schedule-panel {
@@ -225,12 +309,22 @@
     border: 1px solid var(--line);
     border-radius: 14px;
     background: var(--panel);
+    position: relative;
+    overflow: hidden;
+  }
+  .schedule-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--c-schedule) 0%, transparent 100%);
   }
   .schedule-date {
     font-family: 'Anton', sans-serif;
     font-size: 20px;
     letter-spacing: 1px;
     margin-bottom: 12px;
+    color: var(--c-schedule);
   }
   .schedule-list {
     display: flex;
@@ -243,7 +337,8 @@
     align-items: center;
     gap: 8px;
     padding: 10px 12px;
-    background: rgba(255,255,255,0.06);
+    background: rgba(74, 222, 128, 0.08);
+    border-left: 2px solid var(--c-schedule);
     border-radius: 8px;
     font-size: 14px;
   }
@@ -271,16 +366,21 @@
     background: rgba(255,255,255,0.08);
     border-radius: 10px;
     font-size: 14px;
+    border: 1px solid transparent;
+    transition: border-color 0.15s ease;
   }
+  .schedule-form input:focus { border-color: var(--c-schedule-dim); }
   .schedule-form input::placeholder { color: var(--muted); }
   .schedule-form button {
     padding: 0 18px;
-    background: var(--fg);
+    background: linear-gradient(135deg, var(--c-schedule) 0%, #22c55e 100%);
     color: var(--bg);
     border-radius: 10px;
     font-weight: 700;
     font-size: 14px;
+    box-shadow: 0 4px 12px var(--c-schedule-dim);
   }
+  .schedule-form button:active { transform: scale(0.96); }
 
   /* ============ 기록: 상단 히어로 (날짜/시간/스톱워치) ============ */
   .workout-hero {
@@ -368,7 +468,18 @@
     font-family: 'Bebas Neue', 'Impact', sans-serif;
     font-size: 12px;
     letter-spacing: 5px;
-    color: var(--muted);
+    color: var(--c-workout);
+    opacity: 0.8;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .wh-sw-label::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--c-workout);
+    box-shadow: 0 0 8px var(--c-workout-glow);
   }
   .wh-sw-display {
     font-family: 'Anton', sans-serif;
@@ -412,8 +523,10 @@
   .exercise-card {
     padding: 14px;
     border: 1px solid var(--line);
+    border-left: 3px solid var(--c-workout);
     border-radius: 12px;
-    background: var(--panel);
+    background: linear-gradient(135deg, rgba(251,146,60,0.06) 0%, var(--panel) 60%);
+    box-shadow: 0 2px 10px rgba(251,146,60,0.04);
   }
   .exercise-head {
     display: flex;
@@ -430,6 +543,7 @@
     font-size: 18px;
     padding: 2px 6px;
   }
+  .exercise-head .del:active { color: var(--danger); }
   .set-list {
     display: flex;
     flex-wrap: wrap;
@@ -438,13 +552,16 @@
   }
   .set-chip {
     padding: 5px 10px;
-    background: rgba(255,255,255,0.09);
+    background: var(--c-workout-dim);
+    color: var(--c-workout);
+    border: 1px solid rgba(251,146,60,0.3);
     border-radius: 999px;
     font-size: 12px;
     letter-spacing: 0.5px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    font-weight: 600;
   }
   .set-chip .rm {
     color: var(--muted);
@@ -466,19 +583,24 @@
     border-radius: 8px;
     font-size: 13px;
     text-align: center;
+    border: 1px solid transparent;
+    transition: border-color 0.15s ease;
   }
+  .set-input-row input:focus { border-color: var(--c-workout-dim); }
   .set-input-row .add-set {
     padding: 8px 14px;
-    background: var(--fg);
+    background: linear-gradient(135deg, var(--c-workout) 0%, #f97316 100%);
     color: var(--bg);
     border-radius: 8px;
     font-size: 13px;
     font-weight: 700;
+    box-shadow: 0 2px 8px var(--c-workout-dim);
   }
+  .set-input-row .add-set:active { transform: scale(0.96); }
 
   .add-exercise-form {
     padding: 10px;
-    border: 1px dashed var(--line-strong);
+    border: 1px dashed var(--c-workout-dim);
     border-radius: 12px;
     display: flex;
     gap: 8px;
@@ -492,31 +614,39 @@
     background: rgba(255,255,255,0.08);
     border-radius: 8px;
     font-size: 14px;
+    border: 1px solid transparent;
+    transition: border-color 0.15s ease;
   }
+  .add-exercise-form input:focus { border-color: var(--c-workout-dim); }
   .add-exercise-form input::placeholder { color: var(--muted); }
   .add-exercise-form button {
     padding: 10px 18px;
-    background: var(--fg);
+    background: linear-gradient(135deg, var(--c-workout) 0%, #f97316 100%);
     color: var(--bg);
     border-radius: 8px;
     font-weight: 700;
     font-size: 14px;
+    box-shadow: 0 4px 12px var(--c-workout-dim);
   }
+  .add-exercise-form button:active { transform: scale(0.96); }
 
   /* ============ 쇠스탯 ============ */
   .stat-card {
     padding: 16px;
     border: 1px solid var(--line);
+    border-left: 3px solid var(--c-stats);
     border-radius: 14px;
-    background: var(--panel);
+    background: linear-gradient(135deg, rgba(192,132,252,0.05) 0%, var(--panel) 60%);
     margin-bottom: 12px;
+    box-shadow: 0 2px 10px rgba(192,132,252,0.04);
   }
   .stat-title {
     font-size: 13px;
     letter-spacing: 3px;
-    color: var(--muted);
+    color: var(--c-stats);
     text-transform: uppercase;
     margin-bottom: 12px;
+    opacity: 0.85;
   }
   .weight-input-row {
     display: flex;
@@ -535,17 +665,22 @@
     font-family: 'Anton', sans-serif;
     letter-spacing: 1px;
     text-align: center;
+    border: 1px solid transparent;
+    transition: border-color 0.15s ease;
   }
+  .weight-input-row input:focus { border-color: var(--c-stats-dim); }
   .weight-input-row .unit { color: var(--muted); font-size: 13px; padding: 0 2px; flex-shrink: 0; }
   .weight-input-row button {
     padding: 12px 16px;
-    background: var(--fg);
+    background: linear-gradient(135deg, var(--c-stats) 0%, #a855f7 100%);
     color: var(--bg);
     border-radius: 10px;
     font-weight: 700;
     font-size: 13px;
     flex-shrink: 0;
+    box-shadow: 0 4px 12px var(--c-stats-dim);
   }
+  .weight-input-row button:active { transform: scale(0.96); }
 
   .weight-chart {
     display: flex;
@@ -566,9 +701,10 @@
   }
   .weight-bar .bar {
     width: 100%;
-    background: linear-gradient(180deg, var(--accent) 0%, rgba(127,176,255,0.55) 100%);
+    background: linear-gradient(180deg, var(--c-stats-alt) 0%, var(--c-stats) 50%, rgba(192,132,252,0.5) 100%);
     border-radius: 3px 3px 0 0;
     min-height: 2px;
+    box-shadow: 0 -2px 8px var(--c-stats-dim);
   }
   .weight-bar .day-label {
     font-size: 9px;
@@ -578,7 +714,7 @@
   .weight-bar .wt-label {
     font-size: 10px;
     font-family: 'Anton', sans-serif;
-    color: var(--fg);
+    color: var(--c-stats);
   }
 
   .rm-calc {
@@ -597,10 +733,13 @@
     text-align: center;
     font-family: 'Anton', sans-serif;
     font-size: 16px;
+    border: 1px solid transparent;
+    transition: border-color 0.15s ease;
   }
+  .rm-calc input:focus { border-color: var(--c-stats-dim); }
   .rm-calc .rm-out {
     padding: 10px 10px;
-    background: var(--fg);
+    background: linear-gradient(135deg, var(--c-stats) 0%, #a855f7 100%);
     color: var(--bg);
     border-radius: 8px;
     font-family: 'Anton', sans-serif;
@@ -609,8 +748,9 @@
     min-width: 64px;
     text-align: center;
     white-space: nowrap;
+    box-shadow: 0 4px 12px var(--c-stats-dim);
   }
-  .rm-calc .rm-out span { font-size: 11px; opacity: 0.7; }
+  .rm-calc .rm-out span { font-size: 11px; opacity: 0.75; }
 
   .big3-list {
     display: flex;
@@ -627,7 +767,9 @@
   .big3-row .name {
     font-size: 13px;
     letter-spacing: 2px;
-    color: var(--muted);
+    color: var(--c-stats);
+    opacity: 0.85;
+    font-weight: 600;
   }
   .big3-row input {
     min-width: 0;
@@ -637,13 +779,16 @@
     text-align: center;
     font-family: 'Anton', sans-serif;
     font-size: 17px;
+    border: 1px solid transparent;
+    transition: border-color 0.15s ease;
   }
+  .big3-row input:focus { border-color: var(--c-stats-dim); }
   .big3-row .unit { color: var(--muted); font-size: 12px; }
 
   .big3-total {
     margin-top: 12px;
     padding: 14px;
-    background: var(--fg);
+    background: linear-gradient(135deg, var(--c-stats) 0%, #a855f7 60%, var(--c-info) 100%);
     color: var(--bg);
     border-radius: 12px;
     display: flex;
@@ -651,8 +796,19 @@
     justify-content: space-between;
     gap: 10px;
     min-width: 0;
+    box-shadow: 0 8px 24px rgba(192,132,252,0.25);
+    position: relative;
+    overflow: hidden;
   }
-  .big3-total .label { font-size: 13px; letter-spacing: 3px; font-weight: 500; flex-shrink: 0; }
+  .big3-total::before {
+    content: '';
+    position: absolute;
+    top: -40%; right: -20%;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .big3-total .label { font-size: 13px; letter-spacing: 3px; font-weight: 500; flex-shrink: 0; position: relative; }
   .big3-total .value {
     font-family: 'Anton', sans-serif;
     font-size: 28px;
@@ -660,8 +816,315 @@
     letter-spacing: 1px;
     min-width: 0;
     white-space: nowrap;
+    position: relative;
   }
-  .big3-total .value small { font-size: 12px; opacity: 0.6; margin-left: 4px; }
+  .big3-total .value small { font-size: 12px; opacity: 0.7; margin-left: 4px; }
+
+  /* ============ 쇠루틴 (PLAN) ============ */
+  .routine-card {
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--c-plan);
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(250,204,21,0.06) 0%, var(--panel) 60%);
+    margin-bottom: 10px;
+    box-shadow: 0 2px 10px rgba(250,204,21,0.04);
+  }
+  .routine-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 8px;
+  }
+  .routine-name {
+    font-family: 'Anton', sans-serif;
+    font-size: 20px;
+    letter-spacing: 1px;
+    color: var(--fg);
+    flex: 1;
+    min-width: 0;
+  }
+  .routine-badge {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--c-plan);
+    background: var(--c-plan-dim);
+    border-radius: 999px;
+    padding: 3px 8px;
+  }
+  .routine-head .del {
+    color: var(--muted);
+    font-size: 18px;
+    padding: 2px 6px;
+  }
+  .routine-head .del:active { color: var(--danger); }
+  .routine-exercises {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .routine-ex-chip {
+    padding: 5px 10px;
+    background: rgba(250,204,21,0.1);
+    color: var(--c-plan);
+    border: 1px solid rgba(250,204,21,0.25);
+    border-radius: 999px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+  }
+  .routine-ex-chip .rm {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0 2px;
+    cursor: pointer;
+  }
+  .routine-empty-ex {
+    color: var(--muted);
+    font-size: 12px;
+    padding: 4px 0;
+  }
+  .routine-add-ex {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .routine-add-ex input {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 10px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 8px;
+    font-size: 13px;
+    border: 1px solid transparent;
+    transition: border-color 0.15s ease;
+  }
+  .routine-add-ex input:focus { border-color: var(--c-plan-dim); }
+  .routine-add-ex button {
+    padding: 8px 14px;
+    background: rgba(250,204,21,0.15);
+    color: var(--c-plan);
+    border: 1px solid var(--c-plan-dim);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .routine-apply {
+    width: 100%;
+    padding: 11px;
+    background: linear-gradient(135deg, var(--c-plan) 0%, #eab308 100%);
+    color: var(--bg);
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 2px;
+    box-shadow: 0 4px 12px var(--c-plan-dim);
+  }
+  .routine-apply:active { transform: scale(0.97); }
+
+  .routine-create-form {
+    padding: 10px;
+    border: 1px dashed var(--c-plan-dim);
+    border-radius: 12px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 4px;
+  }
+  .routine-create-form input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 8px;
+    font-size: 14px;
+    border: 1px solid transparent;
+    transition: border-color 0.15s ease;
+  }
+  .routine-create-form input:focus { border-color: var(--c-plan-dim); }
+  .routine-create-form input::placeholder { color: var(--muted); }
+  .routine-create-form button {
+    padding: 10px 18px;
+    background: linear-gradient(135deg, var(--c-plan) 0%, #eab308 100%);
+    color: var(--bg);
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    box-shadow: 0 4px 12px var(--c-plan-dim);
+  }
+  .routine-create-form button:active { transform: scale(0.96); }
+
+  /* ============ 쇠타이머 (REST) ============ */
+  .timer-hero {
+    padding: 20px 4px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 12px;
+  }
+  .timer-label {
+    font-family: 'Bebas Neue', 'Impact', sans-serif;
+    font-size: 12px;
+    letter-spacing: 5px;
+    color: var(--c-timer);
+    opacity: 0.85;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .timer-label::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--c-timer);
+    box-shadow: 0 0 8px var(--c-timer-glow);
+  }
+  .timer-display {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(96px, 28vw, 220px);
+    line-height: 0.9;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 2px;
+    color: var(--fg);
+    white-space: nowrap;
+    transition: color 0.2s ease, transform 0.1s ease;
+  }
+  .timer-display .digit {
+    display: inline-block;
+    width: 0.58em;
+    text-align: center;
+    overflow: hidden;
+  }
+  .timer-display .colon {
+    display: inline-block;
+    width: 0.24em;
+    text-align: center;
+    overflow: hidden;
+  }
+  .timer-display.running { color: var(--c-timer); }
+  .timer-display.alert {
+    color: var(--c-timer-alert);
+    animation: timerAlert 0.5s ease-in-out infinite;
+  }
+  @keyframes timerAlert {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.75; }
+  }
+
+  .timer-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .timer-controls button {
+    padding: 11px 22px;
+    border: 1.5px solid var(--c-timer);
+    border-radius: 100px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 3px;
+    color: var(--c-timer);
+    background: transparent;
+    min-width: 90px;
+  }
+  .timer-controls button.primary {
+    background: linear-gradient(135deg, var(--c-timer) 0%, #06b6d4 100%);
+    color: var(--bg);
+    font-weight: 700;
+    border-color: transparent;
+    box-shadow: 0 4px 14px var(--c-timer-dim);
+  }
+  .timer-controls button:active { transform: scale(0.96); }
+  .timer-adjust { display: flex; gap: 8px; justify-content: center; }
+  .timer-adjust button {
+    padding: 8px 14px;
+    background: rgba(34, 211, 238, 0.1);
+    color: var(--c-timer);
+    border: 1px solid var(--c-timer-dim);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .timer-presets {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .timer-preset {
+    padding: 14px 4px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-family: 'Anton', sans-serif;
+    font-size: 18px;
+    color: var(--fg);
+    letter-spacing: 1px;
+    text-align: center;
+    transition: all 0.15s ease;
+  }
+  .timer-preset small {
+    display: block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-top: 2px;
+  }
+  .timer-preset:active {
+    background: var(--c-timer-dim);
+    border-color: var(--c-timer);
+    color: var(--c-timer);
+    transform: scale(0.96);
+  }
+  .timer-preset.active {
+    background: var(--c-timer-dim);
+    border-color: var(--c-timer);
+    color: var(--c-timer);
+    box-shadow: 0 0 12px var(--c-timer-dim);
+  }
+
+  .timer-custom {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .timer-custom input {
+    flex: 1;
+    min-width: 0;
+    padding: 11px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: 'Anton', sans-serif;
+    letter-spacing: 1px;
+    text-align: center;
+    border: 1px solid transparent;
+    transition: border-color 0.15s ease;
+  }
+  .timer-custom input:focus { border-color: var(--c-timer-dim); }
+  .timer-custom .unit { color: var(--muted); font-size: 13px; padding: 0 2px; flex-shrink: 0; }
+  .timer-custom button {
+    padding: 11px 18px;
+    background: linear-gradient(135deg, var(--c-timer) 0%, #06b6d4 100%);
+    color: var(--bg);
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 13px;
+    box-shadow: 0 4px 12px var(--c-timer-dim);
+    flex-shrink: 0;
+  }
 
   /* ============ 스크롤 개선 ============ */
   ::-webkit-scrollbar { width: 0; }
@@ -795,6 +1258,17 @@
       </div>
     </section>
 
+    <!-- ============ TAB: 쇠루틴 ============ -->
+    <section class="tab-panel" data-tab="plan" hidden>
+      <div class="section-title">내 루틴</div>
+      <div id="routineList"></div>
+      <div class="section-title">새 루틴 만들기</div>
+      <div class="routine-create-form">
+        <input type="text" id="routineNameInput" placeholder="루틴 이름 (예: 가슴 + 삼두)">
+        <button id="routineCreate">생성</button>
+      </div>
+    </section>
+
     <!-- ============ TAB 2: 기록 ============ -->
     <section class="tab-panel" data-tab="workout" hidden>
       <div class="workout-hero">
@@ -820,6 +1294,39 @@
       <div class="add-exercise-form">
         <input type="text" id="exerciseInput" placeholder="운동명 (예: 벤치프레스)">
         <button id="exerciseAdd">추가</button>
+      </div>
+    </section>
+
+    <!-- ============ TAB: 쇠타이머 (REST) ============ -->
+    <section class="tab-panel" data-tab="timer" hidden>
+      <div class="timer-hero">
+        <div class="timer-label">REST TIMER</div>
+        <div class="timer-display" id="timerDisplay">00:00</div>
+        <div class="timer-controls">
+          <button class="primary" id="timerToggle">시작</button>
+          <button id="timerReset">리셋</button>
+        </div>
+        <div class="timer-adjust">
+          <button id="timerMinus">-10s</button>
+          <button id="timerPlus">+10s</button>
+        </div>
+      </div>
+      <div class="section-title">프리셋</div>
+      <div class="timer-presets" id="timerPresets">
+        <button class="timer-preset" data-sec="30">30<small>SEC</small></button>
+        <button class="timer-preset" data-sec="45">45<small>SEC</small></button>
+        <button class="timer-preset" data-sec="60">1<small>MIN</small></button>
+        <button class="timer-preset" data-sec="90">1:30<small>MIN</small></button>
+        <button class="timer-preset" data-sec="120">2<small>MIN</small></button>
+        <button class="timer-preset" data-sec="180">3<small>MIN</small></button>
+        <button class="timer-preset" data-sec="240">4<small>MIN</small></button>
+        <button class="timer-preset" data-sec="300">5<small>MIN</small></button>
+      </div>
+      <div class="section-title">사용자 설정</div>
+      <div class="timer-custom">
+        <input type="number" id="timerCustomInput" placeholder="초">
+        <span class="unit">초</span>
+        <button id="timerCustomSet">설정</button>
       </div>
     </section>
 
@@ -890,8 +1397,14 @@
     <button class="gnb-btn active" data-target="schedule">
       <span class="gnb-icon">CAL</span><span>일정</span>
     </button>
+    <button class="gnb-btn" data-target="plan">
+      <span class="gnb-icon">PLN</span><span>루틴</span>
+    </button>
     <button class="gnb-btn" data-target="workout">
       <span class="gnb-icon">LOG</span><span>기록</span>
+    </button>
+    <button class="gnb-btn" data-target="timer">
+      <span class="gnb-icon">RST</span><span>타이머</span>
     </button>
     <button class="gnb-btn" data-target="stats">
       <span class="gnb-icon">1RM</span><span>스탯</span>
@@ -943,6 +1456,10 @@
         if (typeof renderTodayHero === 'function') renderTodayHero();
         if (window._acquireWakeLock) window._acquireWakeLock();
       });
+    }
+    // 타이머 탭도 Wake Lock 유지 (휴식 중 화면 꺼짐 방지)
+    if (target === 'timer' && window._acquireWakeLock) {
+      window._acquireWakeLock();
     }
   }
   gnbBtns.forEach(b => b.addEventListener('click', () => switchTab(b.dataset.target)));
@@ -1351,6 +1868,244 @@
     });
   });
   renderBig3();
+
+  // ============ 쇠루틴 (PLAN) ============
+  const KEY_ROUTINES = 'sw_routines_v1';
+  const defaultRoutines = [
+    { id: 'r_push', name: '가슴 + 삼두', exercises: ['벤치프레스', '인클라인 덤벨프레스', '케이블 플라이', '트라이셉 익스텐션'] },
+    { id: 'r_pull', name: '등 + 이두', exercises: ['데드리프트', '랫풀다운', '바벨 로우', '덤벨 컬'] },
+    { id: 'r_legs', name: '하체', exercises: ['스쿼트', '레그프레스', '루마니안 데드리프트', '카프레이즈'] },
+  ];
+  let routines = store.get(KEY_ROUTINES, defaultRoutines);
+  const routineListEl = document.getElementById('routineList');
+  const routineNameInput = document.getElementById('routineNameInput');
+
+  function renderRoutines() {
+    routineListEl.innerHTML = '';
+    if (!routines.length) {
+      const p = document.createElement('div');
+      p.className = 'schedule-empty';
+      p.textContent = '아직 루틴이 없습니다. 아래에서 추가하세요.';
+      routineListEl.appendChild(p);
+      return;
+    }
+    routines.forEach((r, idx) => {
+      const card = document.createElement('div'); card.className = 'routine-card';
+
+      const head = document.createElement('div'); head.className = 'routine-head';
+      const name = document.createElement('div'); name.className = 'routine-name'; name.textContent = r.name;
+      const badge = document.createElement('span'); badge.className = 'routine-badge'; badge.textContent = `${(r.exercises||[]).length} EX`;
+      const del = document.createElement('button'); del.className = 'del'; del.textContent = '×';
+      del.addEventListener('click', () => {
+        if (!confirm(`'${r.name}' 루틴을 삭제할까요?`)) return;
+        routines.splice(idx, 1);
+        store.set(KEY_ROUTINES, routines);
+        renderRoutines();
+      });
+      head.appendChild(name); head.appendChild(badge); head.appendChild(del);
+      card.appendChild(head);
+
+      const chips = document.createElement('div'); chips.className = 'routine-exercises';
+      if (!r.exercises || r.exercises.length === 0) {
+        const e = document.createElement('span'); e.className = 'routine-empty-ex'; e.textContent = '운동 없음'; chips.appendChild(e);
+      } else {
+        r.exercises.forEach((ex, exi) => {
+          const chip = document.createElement('span'); chip.className = 'routine-ex-chip'; chip.textContent = ex;
+          const rm = document.createElement('span'); rm.className = 'rm'; rm.textContent = '×';
+          rm.addEventListener('click', () => {
+            r.exercises.splice(exi, 1);
+            store.set(KEY_ROUTINES, routines);
+            renderRoutines();
+          });
+          chip.appendChild(rm);
+          chips.appendChild(chip);
+        });
+      }
+      card.appendChild(chips);
+
+      // 운동 추가 입력
+      const addRow = document.createElement('div'); addRow.className = 'routine-add-ex';
+      const addInput = Object.assign(document.createElement('input'), { type: 'text', placeholder: '운동 추가' });
+      const addBtn = document.createElement('button'); addBtn.textContent = '+ 운동';
+      const doAdd = () => {
+        const v = addInput.value.trim();
+        if (!v) return;
+        if (!r.exercises) r.exercises = [];
+        r.exercises.push(v);
+        store.set(KEY_ROUTINES, routines);
+        renderRoutines();
+      };
+      addBtn.addEventListener('click', doAdd);
+      addInput.addEventListener('keydown', e => { if (e.key === 'Enter') doAdd(); });
+      addRow.appendChild(addInput); addRow.appendChild(addBtn);
+      card.appendChild(addRow);
+
+      // 오늘 기록으로 복사
+      const apply = document.createElement('button'); apply.className = 'routine-apply';
+      apply.textContent = '→ 오늘 기록으로 복사';
+      apply.addEventListener('click', () => {
+        const k = todayKey();
+        const existing = workoutData[k] || [];
+        const existingNames = new Set(existing.map(e => e.name));
+        let added = 0;
+        (r.exercises || []).forEach(name => {
+          if (!existingNames.has(name)) {
+            existing.push({ name, sets: [] });
+            added++;
+          }
+        });
+        workoutData[k] = existing;
+        store.set(KEY_WORKOUT, workoutData);
+        renderExercises();
+        switchTab('workout');
+        if (added === 0) alert('이미 오늘 기록에 모두 추가되어 있습니다.');
+      });
+      card.appendChild(apply);
+
+      routineListEl.appendChild(card);
+    });
+  }
+  document.getElementById('routineCreate').addEventListener('click', () => {
+    const v = routineNameInput.value.trim();
+    if (!v) return;
+    routines.push({ id: 'r_' + Date.now(), name: v, exercises: [] });
+    store.set(KEY_ROUTINES, routines);
+    routineNameInput.value = '';
+    renderRoutines();
+  });
+  routineNameInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('routineCreate').click();
+  });
+  renderRoutines();
+
+  // ============ 쇠타이머 (REST) ============
+  const KEY_TIMER_LAST = 'sw_timer_last_v1';
+  const timerDisplay = document.getElementById('timerDisplay');
+  const timerToggle = document.getElementById('timerToggle');
+  const timerReset = document.getElementById('timerReset');
+  const timerMinus = document.getElementById('timerMinus');
+  const timerPlus = document.getElementById('timerPlus');
+  const timerCustomInput = document.getElementById('timerCustomInput');
+  const timerCustomSet = document.getElementById('timerCustomSet');
+  const timerPresetBtns = document.querySelectorAll('.timer-preset');
+
+  let timerTotalSec = store.get(KEY_TIMER_LAST, 60);
+  let timerRemainMs = timerTotalSec * 1000;
+  let timerRunning = false;
+  let timerEndAt = 0;
+  let timerRaf = null;
+  let timerAlertCount = 0;
+  let audioCtx = null;
+
+  function fmtTimer(ms) {
+    const total = Math.max(0, Math.ceil(ms / 1000));
+    const m = Math.floor(total / 60), s = total % 60;
+    return `${pad2(m)}:${pad2(s)}`;
+  }
+  function renderTimer() {
+    const ms = timerRunning ? Math.max(0, timerEndAt - Date.now()) : timerRemainMs;
+    timerDisplay.innerHTML = digitSpans(fmtTimer(ms));
+    if (timerRunning && ms <= 0) {
+      timerRunning = false;
+      cancelAnimationFrame(timerRaf);
+      timerRaf = null;
+      timerRemainMs = 0;
+      timerToggle.textContent = '시작';
+      timerDisplay.classList.remove('running');
+      timerDisplay.classList.add('alert');
+      playAlert();
+      if (navigator.vibrate) navigator.vibrate([400, 150, 400, 150, 600]);
+      setTimeout(() => {
+        timerDisplay.classList.remove('alert');
+        timerRemainMs = timerTotalSec * 1000;
+        renderTimer();
+      }, 3200);
+    }
+  }
+  function timerTick() {
+    renderTimer();
+    if (timerRunning) timerRaf = requestAnimationFrame(timerTick);
+  }
+  function playAlert() {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const freq = [880, 880, 1320];
+      freq.forEach((f, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.value = f;
+        osc.type = 'square';
+        gain.gain.setValueAtTime(0.001, audioCtx.currentTime + i * 0.35);
+        gain.gain.exponentialRampToValueAtTime(0.25, audioCtx.currentTime + i * 0.35 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.35 + 0.3);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + i * 0.35);
+        osc.stop(audioCtx.currentTime + i * 0.35 + 0.32);
+      });
+    } catch {}
+  }
+  function timerStart() {
+    if (timerRunning) return;
+    if (timerRemainMs <= 0) timerRemainMs = timerTotalSec * 1000;
+    timerRunning = true;
+    timerEndAt = Date.now() + timerRemainMs;
+    timerToggle.textContent = '일시정지';
+    timerDisplay.classList.add('running');
+    timerDisplay.classList.remove('alert');
+    timerTick();
+    // 오디오 활성화 (브라우저 자동재생 정책)
+    try { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); audioCtx.resume(); } catch {}
+  }
+  function timerStop() {
+    if (!timerRunning) return;
+    timerRemainMs = Math.max(0, timerEndAt - Date.now());
+    timerRunning = false;
+    cancelAnimationFrame(timerRaf);
+    timerRaf = null;
+    timerToggle.textContent = '시작';
+    timerDisplay.classList.remove('running');
+    renderTimer();
+  }
+  function timerResetFn() {
+    if (timerRunning) timerStop();
+    timerRemainMs = timerTotalSec * 1000;
+    timerDisplay.classList.remove('alert');
+    renderTimer();
+  }
+  function setTimerTotal(sec) {
+    timerTotalSec = Math.max(1, sec | 0);
+    store.set(KEY_TIMER_LAST, timerTotalSec);
+    if (!timerRunning) {
+      timerRemainMs = timerTotalSec * 1000;
+      renderTimer();
+    }
+    timerPresetBtns.forEach(b => b.classList.toggle('active', +b.dataset.sec === timerTotalSec));
+  }
+  function timerAdjust(delta) {
+    if (timerRunning) {
+      timerEndAt += delta * 1000;
+      renderTimer();
+    } else {
+      timerRemainMs = Math.max(0, timerRemainMs + delta * 1000);
+      renderTimer();
+    }
+  }
+
+  timerToggle.addEventListener('click', () => timerRunning ? timerStop() : timerStart());
+  timerReset.addEventListener('click', timerResetFn);
+  timerMinus.addEventListener('click', () => timerAdjust(-10));
+  timerPlus.addEventListener('click', () => timerAdjust(10));
+  timerPresetBtns.forEach(b => b.addEventListener('click', () => setTimerTotal(+b.dataset.sec)));
+  timerCustomSet.addEventListener('click', () => {
+    const v = parseInt(timerCustomInput.value);
+    if (isNaN(v) || v <= 0) return;
+    setTimerTotal(v);
+    timerCustomInput.value = '';
+  });
+  timerCustomInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') timerCustomSet.click();
+  });
+  setTimerTotal(timerTotalSec);  // 초기 렌더 + 활성 프리셋 표시
 
   // ============ Wake Lock (기록 탭·스톱워치 사용 중 화면 꺼짐 방지) ============
   let wakeLock = null;
